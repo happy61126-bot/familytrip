@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
@@ -49,6 +50,9 @@
             background-color: #d1d5db;
             z-index: 0;
         }
+        .timeline-item.compact::before {
+            left: 0.4rem;
+        }
         .timeline-item:last-child::before {
             height: 1.5rem;
         }
@@ -74,7 +78,7 @@
             opacity: 0;
         }
         .collapsible-content.expanded {
-            max-height: 2500px;
+            max-height: 3500px;
             opacity: 1;
         }
 
@@ -217,8 +221,19 @@
                     </div>
                 </div>
 
+                <!-- 旅途總花費 -->
+                <div class="bg-gradient-to-r from-blue-700 to-cyan-600 p-4 rounded-xl shadow-lg text-white mt-8 mb-2 flex justify-between items-center">
+                    <div>
+                        <h3 class="text-sm font-medium opacity-90"><i class="fas fa-chart-pie mr-1.5"></i>旅途總花費</h3>
+                        <p class="text-2xl font-bold mt-1 tracking-wider" id="total-expense-twd">NT$ 0</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-[10px] opacity-75">以當前匯率換算</p>
+                    </div>
+                </div>
+
                 <!-- 記帳歷史列表 -->
-                <h3 class="header-title text-xl font-semibold mt-8 mb-3 text-slate-700">記帳歷史</h3>
+                <h3 class="header-title text-xl font-semibold mt-4 mb-3 text-slate-700">記帳歷史</h3>
                 <div id="expense-history" class="space-y-3">
                     <p id="no-expenses" class="text-center text-gray-500 italic">目前沒有記帳紀錄。</p>
                 </div>
@@ -443,7 +458,8 @@
                 day: 2, date: '2026/06/27', city: '北京市區', accommodation: '漢庭酒店(北京前門店)', events: [
                     { time: '06:30', title: '起床盥洗', highlight: false, details: [] },
                     { time: '07:00', title: '吃早餐', highlight: false, details: ['美團外賣-護國寺小吃(東單店)', '前一晚先點餐'] },
-                    { time: '08:30', title: '前往北京故宮博物院', highlight: true, details: ['請講解(未預約)'], transport: { icon: 'fa-taxi', label: '打車' } },
+                    { time: '08:00', title: '前往北京故宮博物院', highlight: true, details: [], transport: { icon: 'fa-taxi', label: '打車' } },
+                    { time: '08:30', title: '遊覽北京故宮博物院', highlight: false, details: ['請講解(未預約)'] },
                     { time: '12:30', title: '回飯店', highlight: false, details: ['神武門出來後往右走到景山東街打車'], transport: { icon: 'fa-taxi', label: '打車' } },
                     { time: '13:00', title: '吃午餐', highlight: false, details: ['美團外賣-紫光園(崇文門店)', '前一晚先點餐'] },
                     { time: '14:30', title: '自由活動 & 休息', highlight: false, details: [
@@ -476,16 +492,16 @@
                 day: 4, date: '2026/06/29', city: '北京 → 山西大同', accommodation: '益海府邸民宿(大同華嚴寺店)', events: [
                     { time: '06:00', title: '起床盥洗', highlight: false, details: [] },
                     { time: '06:30', title: '吃早餐', highlight: false, details: ['美團外賣-黑窯廠糖油餅', '前一晚先點餐，早上沒吃完可以帶著到高鐵站吃'] },
-                    { time: '07:00', title: '退房 & 前往高鐵北京北站', highlight: true, details: ['包車接送(未預約)'], transport: { icon: 'fa-van-shuttle', label: '包車' } },
+                    { time: '07:00', title: '退房 & 前往高鐵北京北站', highlight: true, details: ['高鐵接送包車 (未預約)'], transport: { icon: 'fa-van-shuttle', label: '包車' } },
                     { time: '08:20', title: '搭乘高鐵前往山西大同', highlight: true, details: [], transport: { icon: 'fa-train', label: '高鐵' } },
                     { time: '10:06', title: '抵達高鐵大同南站', highlight: true, details: [] },
                     { time: '10:30', title: '前往益海府邸民宿(大同華嚴寺店)', highlight: false, details: [
                         '持續關注看甚麼時候可預訂',
-                        '包車接送(已預約3台5人座)'
+                        '高鐵接送包車(已預約3台5人座)'
                     ], transport: { icon: 'fa-van-shuttle', label: '包車' } },
                     { time: '11:00', title: 'CHECK IN 休息一下', highlight: false, details: [] },
                     { time: '11:30', title: '前往喜晉道-刀削麵 吃午餐', highlight: false, details: ['午餐暫定這家，如果人多再去備案(晉北劉姥姥豆麵)'], transport: { icon: 'fa-walking', label: '步行' } },
-                    { time: '12:30', title: '毓芸前往琉璃境做妝造', highlight: false, details: ['可以先回民宿休息一下', '休息好到華嚴寺逛逛'] },
+                    { time: '12:30', title: '毓芸前往琉璃境做妝造', highlight: false, details: ['其他人可以先回民宿休息一下', '休息好可先到華嚴寺逛逛 or 大同古城隨意逛'] },
                     { time: '15:00', title: '搶鳳臨閣晚餐排隊號碼', highlight: true, details: ['俊安負責'] },
                     { time: '15:30', title: '毓芸華嚴寺拍攝', highlight: false, details: [] },
                     { time: '17:00', title: '拍攝結束還衣服', highlight: false, details: [] },
@@ -498,9 +514,9 @@
                 day: 5, date: '2026/06/30', city: '山西大同', accommodation: '益海府邸民宿(大同華嚴寺店)', events: [
                     { time: '07:00', title: '起床盥洗', highlight: false, details: [] },
                     { time: '07:30', title: '吃早餐', highlight: false, details: ['美團外賣-孫記包子(迎澤街店)', '前一晚先點餐'] },
-                    { time: '08:30', title: '前往雲岡石窟', highlight: true, details: [], transport: { icon: 'fa-van-shuttle', label: '包車' } },
+                    { time: '08:30', title: '前往雲岡石窟', highlight: true, details: ['包車9人座(已預約)'], transport: { icon: 'fa-van-shuttle', label: '包車' } },
                     { time: '09:15', title: '遊覽雲岡石窟', highlight: false, details: ['午餐在景區內解決，小吃街找一家人少的吃'] },
-                    { time: '14:00', title: '返回大同古城', highlight: true, details: [], transport: { icon: 'fa-van-shuttle', label: '包車' } },
+                    { time: '14:00', title: '返回大同古城', highlight: true, details: ['包車9人座(已預約)'], transport: { icon: 'fa-van-shuttle', label: '包車' } },
                     { time: '14:45', title: '大同古城續遊', highlight: false, details: [
                         '媽媽如果累了可以回民宿休息',
                         '下午就在古城輕鬆逛'
@@ -509,59 +525,63 @@
                         '如果前一晚沒吃到鳳臨閣這天可以再搶看看',
                         '花園大飯店人太多就吃北魏家宴'
                     ] },
-                    { time: '20:00', title: '返回民宿', highlight: false, details: ['住宿：益海府邸民宿(大同華嚴寺店)'], transport: { icon: 'fa-walking', label: '步行' } }
+                    { time: '21:00', title: '前往觀看 如夢大同表演', highlight: true, details: ['要去的人可以一起去'], transport: { icon: 'fa-walking', label: '步行' } },
+                    { time: '22:30', title: '返回飯店', highlight: false, details: ['住宿：益海府邸民宿(大同華嚴寺店)'] }
                 ]
             },
             {
-                day: 6, date: '2026/07/01', city: '大同 → 五台山', accommodation: '花築‧喜樾山精品酒店', events: [
+                day: 6, date: '2026/07/01', city: '大同 → 五台山', accommodation: '五台山萬豪酒店', events: [
                     { time: '06:30', title: '起床盥洗', highlight: false, details: [] },
                     { time: '07:00', title: '吃早餐', highlight: false, details: ['美團外賣-龍聚祥燒賣(鼓樓店)', '前一晚先點餐'] },
-                    { time: '08:00', title: '退房 & 出發前往應縣木塔', highlight: true, details: [], transport: { icon: 'fa-van-shuttle', label: '包車' } },
+                    { time: '08:00', title: '退房 & 出發前往應縣木塔', highlight: true, details: ['包車9人座 全日 (已預約)'], transport: { icon: 'fa-van-shuttle', label: '包車' } },
                     { time: '09:30', title: '遊覽應縣木塔', highlight: false, details: [] },
                     { time: '11:00', title: '出發渾源吃午餐', highlight: false, details: [], transport: { icon: 'fa-van-shuttle', label: '包車' } },
                     { time: '12:00', title: '吃午餐-蔡家酒樓', highlight: false, details: ['如果人太多就改吃北越恒山村'] },
                     { time: '13:30', title: '遊覽懸空寺', highlight: true, details: ['僅在下面看不登臨'], transport: { icon: 'fa-van-shuttle', label: '包車' } },
-                    { time: '14:30', title: '出發前往五台山-台懷鎮', highlight: true, details: [], transport: { icon: 'fa-van-shuttle', label: '包車' } },
-                    { time: '18:00', title: '抵達酒店 CHECK IN', highlight: false, details: ['住宿：花築‧喜樾山精品酒店'] },
-                    { time: '18:30', title: '吃晚餐：一葉一世界 素食餐廳', highlight: true, details: [], transport: { icon: 'fa-walking', label: '步行' } },
-                    { time: '20:00', title: '夜遊五台山', highlight: false, details: [] },
-                    { time: '22:00', title: '回飯店', highlight: false, details: [] }
+                    { time: '14:30', title: '出發前往五台山-梵境里小鎮', highlight: true, details: [], transport: { icon: 'fa-van-shuttle', label: '包車' } },
+                    { time: '18:00', title: '抵達酒店 CHECK IN', highlight: false, details: ['住宿：五台山萬豪酒店'] },
+                    { time: '18:30', title: '吃晚餐：境遇 ‧ 一品香素齋', highlight: true, details: ['如果人很多就在梵境里小鎮裡面逛吃'], transport: { icon: 'fa-walking', label: '步行' } },
+                    { time: '20:00', title: '梵境里小鎮夜遊', highlight: false, details: ['五台傳奇實境秀、千架無人機表演、水幕燈光秀、沉浸式街演'] },
+                    { time: '22:00', title: '返回飯店', highlight: false, details: ['住宿：五台山萬豪酒店'] }
                 ]
             },
             {
                 day: 7, date: '2026/07/02', city: '五台山 → 忻州', accommodation: '南宸‧汐上民宿', events: [
-                    { time: '08:00', title: '起床盥洗', highlight: false, details: [] },
-                    { time: '08:30', title: '吃早餐', highlight: false, details: ['德克士 素食漢堡(現場吃或外賣吃都行)'] },
-                    { time: '09:30', title: '五台山一日遊', highlight: false, details: ['午餐-普化寺素齋'], transport: { icon: 'fa-van-shuttle', label: '步行+包車' } },
-                    { time: '15:00', title: '下山前往忻州古城', highlight: true, details: [], transport: { icon: 'fa-van-shuttle', label: '包車' } },
+                    { time: '06:00', title: '起床盥洗', highlight: false, details: [] },
+                    { time: '06:30', title: '退房&前往 德克士 吃早餐', highlight: true, details: [], transport: { icon: 'fa-van-shuttle', label: '包車' } },
+                    { time: '07:30', title: '前往 五爺廟 開始遊覽五台山', highlight: true, details: ['五爺廟-塔院寺-顯通寺-菩薩頂'] },
+                    { time: '12:00', title: '菩薩頂素齋', highlight: false, details: ['如果結束的早可以去普化寺素齋'] },
+                    { time: '13:00', title: '前往 殊像寺', highlight: true, details: ['車子到菩薩頂載我們過去', '殊像寺逛完可以去大文殊寺'], transport: { icon: 'fa-van-shuttle', label: '包車' } },
+                    { time: '15:00', title: '下山前往忻州古城', highlight: true, details: ['包車9人座(已預約)'], transport: { icon: 'fa-van-shuttle', label: '包車' } },
                     { time: '17:00', title: '抵達南宸‧汐上民宿 CHECK IN', highlight: false, details: [] },
-                    { time: '17:30', title: '前往忻州古城', highlight: true, details: ['吃晚餐+逛街'], transport: { icon: 'fa-walking', label: '步行' } },
-                    { time: '21:00', title: '返回民宿', highlight: false, details: ['住宿：南宸‧汐上民宿'], transport: { icon: 'fa-walking', label: '步行' } }
+                    { time: '17:30', title: '前往 悦華老菜館', highlight: true, details: ['包車載我們到菜館後結束'], transport: { icon: 'fa-van-shuttle', label: '包車' } },
+                    { time: '18:00', title: '吃晚餐', highlight: false, details: [] },
+                    { time: '19:30', title: '前往 忻洲古城', highlight: true, details: ['看非遺打鐵花表演！'], transport: { icon: 'fa-taxi', label: '打車' } },
+                    { time: '20:30', title: '忻洲古城夜遊', highlight: false, details: ['從打鐵花表演場慢慢逛回民宿'] },
+                    { time: '22:00', title: '返回民宿', highlight: false, details: ['住宿：南宸‧汐上民宿'] }
                 ]
             },
             {
                 day: 8, date: '2026/07/03', city: '忻州 → 北京', accommodation: '北京飯店 (待定)', events: [
                     { time: '07:30', title: '起床盥洗', highlight: false, details: [] },
                     { time: '08:00', title: '前往吃早餐-光明早餐店', highlight: false, details: ['現場吃'], transport: { icon: 'fa-walking', label: '步行' } },
-                    { time: '09:00', title: '忻州古城晨游', highlight: false, details: ['漫步忻州古城', '中午在古城裡簡單吃'] },
+                    { time: '09:00', title: '退房寄存行李&忻州古城晨游', highlight: false, details: ['漫步忻州古城', '中午在古城裡簡單吃', '推薦必吃:烤豬蹄、麻葉、酸奶、豆腐丸子、保德油糕、新疆羊肉串、鮮榨沙棘汁、鹵豬蹄'] },
                     { time: '13:50', title: '前往高鐵忻州西站', highlight: true, details: [], transport: { icon: 'fa-car', label: '民宿接送' } },
                     { time: '14:20', title: '抵達高鐵忻州西站', highlight: false, details: [] },
                     { time: '14:49', title: '搭乘高鐵前往北京北站', highlight: true, details: [], transport: { icon: 'fa-train', label: '高鐵' } },
-                    { time: '18:12', title: '抵達北京前往飯店', highlight: true, details: [], transport: { icon: 'fa-van-shuttle', label: '包車' } },
-                    { time: '19:00', title: '抵達飯店 CHECK IN', highlight: false, details: ['飯店待定'] },
-                    { time: '19:30', title: '前往南鑼鼓巷 逛吃', highlight: true, details: [], transport: { icon: 'fa-walking', label: '步行' } },
-                    { time: '21:30', title: '返回飯店', highlight: false, details: [], transport: { icon: 'fa-walking', label: '步行' } }
+                    { time: '18:12', title: '抵達北京前往飯店', highlight: true, details: ['高鐵接駁包車(未預定)', '飯店待定'], transport: { icon: 'fa-van-shuttle', label: '包車' } },
+                    { time: '19:30', title: '晚餐:璟雅軒 一鴨九吃', highlight: true, details: ['如果人很多就在南鑼鼓巷逛吃'] },
+                    { time: '21:30', title: '返回飯店', highlight: false, details: ['飯店待定'], transport: { icon: 'fa-walking', label: '步行' } }
                 ]
             },
             {
                 day: 9, date: '2026/07/04', city: '北京 → 台灣', accommodation: '溫暖的家', events: [
-                    { time: '08:00', title: '起床盥洗', highlight: false, details: [] },
-                    { time: '08:30', title: '吃早餐', highlight: false, details: [] },
-                    { time: '09:30', title: '前往北京首都國際機場', highlight: true, details: [], transport: { icon: 'fa-bus', label: '接駁車' } },
+                    { time: '08:30', title: '吃早餐', highlight: false, details: ['美團外賣-待定', '前一晚先點餐'] },
+                    { time: '09:30', title: '退房&前往北京首都國際機場', highlight: true, details: [], transport: { icon: 'fa-bus', label: '接駁車' } },
                     { time: '10:30', title: 'CHECK IN 免稅店', highlight: true, details: [] },
                     { time: '13:55', title: '飛往桃園國際機場', highlight: true, details: ['長榮航空 (BR715)'], transport: { icon: 'fa-plane', label: '航班' } },
                     { time: '17:05', title: '抵達桃園 入境', highlight: true, details: [] },
-                    { time: '18:00', title: '返回富宇君品', highlight: false, details: [], transport: { icon: 'fa-bus', label: '接駁車' } },
+                    { time: '18:00', title: '返回富宇君品', highlight: false, details: ['機場接送(未預約)'], transport: { icon: 'fa-bus', label: '接駁車' } },
                     { time: '19:00', title: '抵達富宇君品吃晚餐', highlight: false, details: ['火鍋世家'] },
                     { time: '21:00', title: '休息睡覺', highlight: false, details: [] }
                 ]
@@ -630,7 +650,7 @@
             }
         ];
 
-        // --- 更新 GUIDE 模組資料結構 (內容後補) ---
+        // --- 更新 GUIDE 模組資料結構 ---
         const guideArticles = [
             {
                 title: '北京故宮',
@@ -667,41 +687,41 @@
             {
                 title: '大同古城',
                 subtitle: '塞外古都的歷史風韻',
-                content: '內容後補',
+                content: '大同古城位於山西省大同市，古稱平城，曾為北魏都城、遼金陪都及明清重鎮，是首批國家級歷史文化名城。明洪武五年（1372年），大將軍徐達增築城池，形成周長7.24公里的府城。古城延續了棋盤式里坊格局，有“四大街、八小巷”之稱。城內匯聚了華嚴寺、善化寺及九龍壁等眾多遼金與明代古蹟，堪稱一座活的“中國古建築博物館”。',
                 icon: 'fa-city',
-                route: '建議遊玩路線後補',
+                route: '夜遊路線：華嚴寺廣場-鼓樓東西街-東南邑-和陽門-太平樓-四牌樓\n日遊路線：華嚴寺廣場-純陽宮-善化寺-大同府文廟-帝君廟-鼓樓-九龍壁-代王府-法華寺',
                 mapUrl: ''
             },
             {
                 title: '雲岡石窟',
                 subtitle: '中國四大石窟之一，佛教藝術寶庫',
-                content: '內容後補',
+                content: '雲岡石窟位於山西大同武周山南麓，始鑿於北魏和平元年（公元460年），由高僧曇曜主持開鑿。石窟依山開鑿，東西綿延約1公里，現存主要洞窟45個，大小造像59,000餘尊。早期「曇曜五窟」氣勢雄渾，第20窟露天大佛為其標誌。雲岡石窟融合了中亞與中原文化，開創了佛教藝術中國化的先河，被譽為公元5世紀世界雕刻藝術的巔峰。2001年，雲岡石窟被聯合國教科文組織列入《世界遺產名錄》。',
                 icon: 'fa-om',
-                route: '建議遊玩路線後補',
+                route: '景區入口-曇曜廣場-禮佛大道-靈岩寺-第1～20窟-雲崗禮物-返程走路或搭電瓶車',
                 mapUrl: ''
             },
             {
                 title: '應縣木塔',
                 subtitle: '世界現存最古老最高大的木塔',
-                content: '內容後補',
+                content: '應縣木塔，全稱佛宮寺釋迦塔，位於山西省朔州市應縣。始建於遼清寧二年（公元1056年），是世界上現存最高大、最古老的純木結構樓閣式建築。塔高67.31米，底層直徑30.27米，重達7,400多噸，全塔上下沒用一顆鐵釘，全靠木構件互相卯榫咬合而成。其塔身內外共使用了54種不同形制的斗拱，規模宏大、種類繁多，被譽為“中國古建築斗拱博物館”。1961年，應縣木塔被列為第一批全國重點文物保護單位，並於2016年被認證為“世界上最高的木塔”。',
                 icon: 'fa-monument',
-                route: '建議遊玩路線後補',
+                route: '',
                 mapUrl: ''
             },
             {
                 title: '懸空寺',
                 subtitle: '建在峭壁上的奇險建築',
-                content: '內容後補',
+                content: '懸空寺，原稱“玄空閣”，位於山西省大同市渾源縣恆山金龍峽翠屏峰峭壁間。它始建於北魏太和十五年（公元491年），距今已逾1500年，是國內現存唯一佛、道、儒“三教合一”的古寺。整座寺院上載危崖，下臨深谷，樓閣懸空，以“奇、懸、巧”的建築特色聞名於世。寺內擁有殿閣四十餘間，李白曾贊其“壯觀”，徐霞客更驚嘆為“天下巨觀”。1982年，懸空寺被列為全國重點文物保護單位。',
                 icon: 'fa-mountain',
-                route: '建議遊玩路線後補',
+                route: '',
                 mapUrl: ''
             },
             {
                 title: '五台山',
                 subtitle: '中國佛教四大名山之首',
-                content: '內容後補',
+                content: '五台山位於山西省忻州市，是中國佛教四大名山之首，也是世界五大佛教聖地之一。作為文殊菩薩的道場，其佛教始於東漢，並因是中國唯一漢傳與藏傳佛教並存的名山而獨具特色。2009年，五台山因其將自然地貌與佛教文化完美融合的獨特文化景觀，被列入世界文化遺產。',
                 icon: 'fa-vihara',
-                route: '建議遊玩路線後補',
+                route: '五爺廟-塔院寺-顯通寺-菩薩頂',
                 mapUrl: ''
             },
             {
@@ -721,6 +741,7 @@
                 mapUrl: ''
             }
         ];
+
 
         // --- 核心功能函數 ---
 
@@ -751,14 +772,7 @@
         function renderGuide() {
             const articleContainer = document.getElementById('guide-articles');
             articleContainer.innerHTML = guideArticles.map((article, index) => {
-                return `
-                <div class="bg-white p-4 rounded-xl shadow-md border border-slate-200">
-                    <h3 class="header-title text-xl font-bold text-blue-900 mb-1">
-                        <i class="fas ${article.icon} text-cyan-600 mr-2"></i> ${article.title}
-                    </h3>
-                    <p class="text-sm font-light text-gray-500 mb-3 border-b border-slate-100 pb-2">${article.subtitle}</p>
-                    <p class="text-sm text-gray-700 whitespace-pre-wrap">${article.content}</p>
-
+                const routeHtml = article.route ? `
                     <button class="w-full mt-4 text-left p-3 bg-blue-50 text-blue-800 font-bold rounded-xl transition hover:bg-blue-100 flex justify-between items-center" 
                             onclick="toggleCollapsible('route-content-${index}', this)">
                         <span><i class="fas fa-map-signs mr-2 text-cyan-600"></i> 建議遊玩路線</span>
@@ -779,6 +793,16 @@
                             ` : ''}
                         </div>
                     </div>
+                ` : '';
+
+                return `
+                <div class="bg-white p-4 rounded-xl shadow-md border border-slate-200">
+                    <h3 class="header-title text-xl font-bold text-blue-900 mb-1">
+                        <i class="fas ${article.icon} text-cyan-600 mr-2"></i> ${article.title}
+                    </h3>
+                    <p class="text-sm font-light text-gray-500 mb-3 border-b border-slate-100 pb-2">${article.subtitle}</p>
+                    <p class="text-sm text-gray-700 whitespace-pre-wrap leading-relaxed">${article.content}</p>
+                    ${routeHtml}
                 </div>
             `}).join('');
         }
@@ -801,25 +825,20 @@
             const listContainer = document.getElementById('itinerary-list');
             listContainer.innerHTML = '';
 
-            tripData.forEach((dayInfo, index) => {
-                const isExpanded = ''; 
-                const iconRotate = '';
-                const contentId = `day-content-${index}`;
-
-                let dayContent = '';
-
-                dayInfo.events.forEach(event => {
+            const generateEventsHtml = (events, isCompact, accommodation) => {
+                let content = '';
+                events.forEach(event => {
                     const highlightClass = 'bg-white shadow-sm border';
                     const borderColor = event.highlight ? 'border-blue-300' : 'border-slate-100';
                     const timeHighlight = event.highlight ? 'text-blue-800 font-bold' : 'text-slate-500 font-semibold';
                     const dotColor = event.highlight ? 'bg-blue-800' : 'bg-cyan-500';
                     
                     const detailsHtml = event.details.map(detail => 
-                        `<p class="text-xs text-gray-600 mt-1 pl-2 border-l-2 border-slate-200">${detail}</p>`
+                        `<p class="text-[11px] text-gray-600 mt-1 pl-1.5 border-l-2 border-slate-200">${detail}</p>`
                     ).join('');
 
                     let foodItemsHtml = '';
-                    if (event.foodItems && event.foodItems.length > 0) {
+                    if (!isCompact && event.foodItems && event.foodItems.length > 0) {
                         foodItemsHtml = event.foodItems.map(category => {
                             const itemsHtml = category.items.map(item => {
                                 const link = BaiduMapLinks[item];
@@ -845,32 +864,73 @@
                     // 判斷交通工具並生成標籤
                     let transportHtml = '';
                     if (event.transport) {
-                        transportHtml = `
-                            <div class="absolute right-3 top-3.5 text-[10px] font-medium text-cyan-700 bg-cyan-50 border border-cyan-100 px-2 py-0.5 rounded-lg flex items-center shadow-sm z-10">
-                                <i class="fas ${event.transport.icon} mr-1.5 opacity-80"></i> ${event.transport.label}
-                            </div>
-                        `;
+                        if (isCompact) {
+                            transportHtml = `<div class="mt-1.5 text-[9px] font-medium text-cyan-700 bg-cyan-50 border border-cyan-100 px-1.5 py-0.5 rounded flex items-center w-max shadow-sm"><i class="fas ${event.transport.icon} mr-1 opacity-80"></i> ${event.transport.label}</div>`;
+                        } else {
+                            transportHtml = `
+                                <div class="absolute right-3 top-3.5 text-[10px] font-medium text-cyan-700 bg-cyan-50 border border-cyan-100 px-2 py-0.5 rounded-lg flex items-center shadow-sm z-10">
+                                    <i class="fas ${event.transport.icon} mr-1.5 opacity-80"></i> ${event.transport.label}
+                                </div>
+                            `;
+                        }
                     }
 
-                    dayContent += `
-                        <div class="relative pl-7 pb-6 timeline-item">
-                            <div class="timeline-dot ${dotColor}"></div>
-                            <div class="relative p-3.5 ${highlightClass} ${borderColor} rounded-2xl ml-3">
-                                ${transportHtml}
-                                <p class="text-sm ${timeHighlight} flex items-center">
+                    const titleClass = isCompact ? 'text-sm pr-0 leading-snug' : 'text-base pr-14';
+                    const paddingClass = isCompact ? 'p-2.5' : 'p-3.5';
+                    const timelineClass = isCompact ? 'pl-4 pb-4 timeline-item compact' : 'pl-7 pb-6 timeline-item';
+                    const dotStyle = isCompact ? 'left: 0.15rem; width: 10px; height: 10px; top: 0.4rem;' : '';
+                    
+                    let accommHtml = '';
+                    if (accommodation && !isCompact && (event.time.includes('返回') || event.time.includes('抵達酒店') || event.time.includes('抵達飯店'))) {
+                        accommHtml = `<div class="mt-3 bg-slate-50 p-2 rounded-lg border border-slate-100"><p class="text-xs text-blue-800 font-semibold"><i class="fas fa-bed mr-1.5 text-cyan-600"></i>住宿: ${accommodation}</p></div>`;
+                    }
+
+                    content += `
+                        <div class="relative ${timelineClass}">
+                            <div class="timeline-dot ${dotColor}" style="${dotStyle}"></div>
+                            <div class="relative ${paddingClass} ${highlightClass} ${borderColor} rounded-2xl ${isCompact ? 'ml-1' : 'ml-3'}">
+                                ${!isCompact ? transportHtml : ''}
+                                <p class="${isCompact ? 'text-[11px]' : 'text-sm'} ${timeHighlight} flex items-center">
                                     ${event.time}
-                                    ${event.highlight ? '<span class="ml-2 w-1.5 h-1.5 rounded-full bg-cyan-500"></span>' : ''}
+                                    ${event.highlight && !isCompact ? '<span class="ml-2 w-1.5 h-1.5 rounded-full bg-cyan-500"></span>' : ''}
                                 </p>
-                                <p class="text-base font-bold text-slate-800 mt-1 pr-14">${event.title}</p>
-                                <div class="mt-2 space-y-1">
+                                <p class="${titleClass} font-bold text-slate-800 mt-1">${event.title}</p>
+                                ${isCompact ? transportHtml : ''}
+                                <div class="mt-1.5 space-y-1">
                                     ${detailsHtml}
                                 </div>
                                 ${foodItemsHtml} 
-                                ${dayInfo.accommodation && (event.time.includes('返回飯店') || event.time.includes('返回民宿') || event.time.includes('抵達酒店') || event.time.includes('抵達飯店')) ? `<div class="mt-3 bg-slate-50 p-2 rounded-lg border border-slate-100"><p class="text-xs text-blue-800 font-semibold"><i class="fas fa-bed mr-1.5 text-cyan-600"></i>住宿: ${dayInfo.accommodation}</p></div>` : ''}
+                                ${accommHtml}
                             </div>
                         </div>
                     `;
                 });
+                return content;
+            };
+
+            tripData.forEach((dayInfo, index) => {
+                const isExpanded = ''; 
+                const iconRotate = '';
+                const contentId = `day-content-${index}`;
+
+                let dayContentHtml = '';
+
+                if (dayInfo.isSplitPlan) {
+                    dayContentHtml = `
+                        <div class="flex flex-row space-x-1 sm:space-x-2">
+                            <div class="w-1/2 border-r border-slate-200 pr-1">
+                                <div class="text-center font-bold text-blue-800 mb-3 text-xs bg-blue-50 py-1.5 rounded-lg border border-blue-100 shadow-sm">方案 A</div>
+                                ${generateEventsHtml(dayInfo.planA, true, dayInfo.accommodation)}
+                            </div>
+                            <div class="w-1/2 pl-1">
+                                <div class="text-center font-bold text-cyan-700 mb-3 text-xs bg-cyan-50 py-1.5 rounded-lg border border-cyan-100 shadow-sm">方案 B</div>
+                                ${generateEventsHtml(dayInfo.planB, true, dayInfo.accommodation)}
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    dayContentHtml = generateEventsHtml(dayInfo.events, false, dayInfo.accommodation);
+                }
 
                 listContainer.innerHTML += `
                     <div class="bg-white rounded-2xl shadow-sm border border-slate-200 mb-4 overflow-hidden">
@@ -891,8 +951,8 @@
                         </button>
                         
                         <div id="${contentId}" class="collapsible-content ${isExpanded}">
-                            <div class="p-4 pt-6 bg-slate-50/50 border-t border-slate-100">
-                                ${dayContent}
+                            <div class="p-3 sm:p-4 pt-6 bg-slate-50/50 border-t border-slate-100">
+                                ${dayContentHtml}
                             </div>
                         </div>
                     </div>
@@ -1200,8 +1260,11 @@
 
         function renderExpenses() {
             const historyContainer = document.getElementById('expense-history');
+            let totalTWD = 0;
+
             if (expenses.length === 0) {
                 historyContainer.innerHTML = '<div class="text-center py-8 bg-slate-50 rounded-xl border border-dashed border-slate-200"><i class="fas fa-receipt text-3xl text-slate-300 mb-2"></i><p id="no-expenses" class="text-sm text-gray-500">目前沒有記帳紀錄</p></div>';
+                document.getElementById('total-expense-twd').textContent = 'NT$ 0';
                 return;
             }
 
@@ -1215,10 +1278,12 @@
                 
                 if (currency === 'RMB') {
                     const amountTWD = baseAmount * exchangeRate;
+                    totalTWD += amountTWD;
                     mainDisplay = `¥ ${baseAmount.toFixed(2)}`;
                     subDisplay = `NT$ ${amountTWD.toFixed(0)}`;
                 } else {
                     const amountRMB = baseAmount / exchangeRate;
+                    totalTWD += baseAmount;
                     mainDisplay = `NT$ ${baseAmount.toFixed(0)}`;
                     subDisplay = `¥ ${amountRMB.toFixed(2)}`;
                 }
@@ -1256,6 +1321,8 @@
                     </div>
                 `;
             }).join('');
+
+            document.getElementById('total-expense-twd').textContent = `NT$ ${totalTWD.toLocaleString('zh-TW', { maximumFractionDigits: 0 })}`;
         }
 
         // --- 4. LISTS (清單) 模組 ---
@@ -1396,3 +1463,6 @@
     </script>
 </body>
 </html>
+
+
+```
