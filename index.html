@@ -1,0 +1,1461 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>京城晉韻~北京山西9日遊 旅遊小程式</title>
+    <!-- 載入 Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- 載入 Font Awesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <!-- 載入 Google Fonts (Noto Serif TC for titles, Noto Sans TC for body) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;700&family=Noto+Serif+TC:wght=500;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* 自定義 Tailwind 配置 (中國藍色調) */
+        :root {
+            --color-primary: #1e3a8a; /* 中國藍/青花藍 */
+            --color-secondary: #f1f5f9; /* 淺灰藍 */
+            --color-accent: #0891b2; /* 湖水青/景泰藍 */
+        }
+        
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: #cbd5e1; /* 手機版外框底色 */
+            color: #333;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .header-title {
+            font-family: 'Noto Serif TC', serif;
+            letter-spacing: 2px;
+        }
+
+        .tab-button.active {
+            color: var(--color-primary);
+            border-top: 3px solid var(--color-primary);
+        }
+
+        /* 行程卡片的時間軸線條 */
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: 1rem;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background-color: #d1d5db;
+            z-index: 0;
+        }
+        .timeline-item.compact::before {
+            left: 0.4rem;
+        }
+        .timeline-item:last-child::before {
+            height: 1.5rem;
+        }
+
+        /* 重點時間圓點 */
+        .timeline-item .timeline-dot {
+            position: absolute;
+            left: 0.5rem;
+            top: 0.5rem;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: var(--color-primary);
+            border: 2px solid #ffffff;
+            z-index: 1;
+        }
+
+        /* 可收合內容的動畫 */
+        .collapsible-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease-in-out;
+            opacity: 0;
+        }
+        .collapsible-content.expanded {
+            max-height: 3500px;
+            opacity: 1;
+        }
+
+        /* 自定義捲軸隱藏 */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="h-[100dvh] flex justify-center items-center">
+
+    <!-- 手機版面容器 -->
+    <div id="app-wrapper" class="w-full max-w-md h-full sm:h-[95dvh] sm:max-h-[850px] flex flex-col bg-slate-50 relative sm:rounded-[2rem] sm:border-8 border-slate-800 overflow-hidden shadow-2xl">
+        
+        <!-- 頂部標題與資訊 -->
+        <header class="bg-white shadow-sm p-4 sticky top-0 z-20 border-b border-gray-200">
+            <h1 class="header-title text-xl text-center font-bold text-blue-900 leading-tight">
+                京城晉韻~北京山西9日遊<br>
+                <span class="text-sm text-gray-500 font-normal block mt-1">旅遊小程式</span>
+            </h1>
+            
+            <!-- 航班資訊 -->
+            <div class="mt-2 text-center">
+                <div class="inline-flex items-center justify-center space-x-3 bg-slate-50 border border-slate-200 rounded-full px-4 py-1.5 text-xs text-gray-600 shadow-sm">
+                    <span class="flex items-center font-medium"><i class="fas fa-plane-departure text-blue-700 mr-1.5 opacity-80"></i>06/26 BR716</span>
+                    <span class="text-gray-300">|</span>
+                    <span class="flex items-center font-medium"><i class="fas fa-plane-arrival text-cyan-600 mr-1.5 opacity-80"></i>07/04 BR715</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- 內容區域 (主視圖) -->
+        <main id="content" class="flex-grow overflow-y-auto pb-20 no-scrollbar">
+            <!-- PLAN (行程表) 模組 -->
+            <div id="plan-tab" class="p-4 space-y-4 tab-content hidden">
+                <h2 class="header-title text-2xl font-bold text-center text-slate-700 mb-6">
+                    <i class="fas fa-route text-cyan-600 mr-2"></i> 行程表
+                </h2>
+                <div id="itinerary-list" class="space-y-4">
+                    <!-- 行程內容將由 JS 渲染 -->
+                </div>
+            </div>
+
+            <!-- GUIDE (深度導覽) 模組 -->
+            <div id="guide-tab" class="p-4 space-y-8 tab-content hidden">
+                <h2 class="header-title text-2xl font-bold text-center text-slate-700 mb-6">
+                    <i class="fas fa-book-open text-cyan-600 mr-2"></i> 深度導覽
+                </h2>
+                
+                <div id="guide-articles" class="space-y-6">
+                    <!-- 導覽文章將由 JS 渲染 -->
+                </div>
+            </div>
+
+            <!-- WALLET (記帳與匯率) 模組 -->
+            <div id="wallet-tab" class="p-4 space-y-6 tab-content hidden">
+                <h2 class="header-title text-2xl font-bold text-center text-slate-700 mb-6">
+                    <i class="fas fa-yen-sign text-cyan-600 mr-2"></i> 記帳與匯率
+                </h2>
+                
+                <!-- 匯率計算機 -->
+                <div class="bg-white p-4 rounded-xl shadow-lg border-2 border-cyan-300">
+                    <h3 class="header-title text-xl font-semibold mb-3 text-blue-800">匯率換算器 (RMB to TWD)</h3>
+                    <div class="flex space-x-2 mb-3">
+                        <input type="number" id="exchange-rate" value="4.65" step="0.01" class="w-1/3 p-2 border rounded-lg text-center" placeholder="匯率">
+                        <button onclick="saveExchangeRate()" class="w-2/3 bg-cyan-600 text-white p-2 rounded-lg font-bold hover:bg-cyan-700 transition">
+                            儲存匯率 (<span id="current-rate">4.65</span>)
+                        </button>
+                    </div>
+
+                    <div class="p-3 bg-gray-100 rounded-lg shadow-inner">
+                        <input type="text" id="calc-input" class="w-full text-2xl p-2 mb-2 text-right bg-transparent border-b-2 border-gray-300 font-mono" placeholder="輸入算式或金額...">
+                        <div id="calc-result" class="text-right text-lg font-bold text-blue-800">總額 (RMB): 0.00</div>
+                        <div id="twd-result" class="text-right text-sm font-semibold text-gray-600">換算 (TWD): 0.00</div>
+                    </div>
+
+                    <div class="grid grid-cols-4 gap-2 mt-3">
+                        <button class="calc-btn bg-slate-200 p-3 rounded-xl shadow-sm text-lg font-semibold" onclick="handleCalcInput('7')">7</button>
+                        <button class="calc-btn bg-slate-200 p-3 rounded-xl shadow-sm text-lg font-semibold" onclick="handleCalcInput('8')">8</button>
+                        <button class="calc-btn bg-slate-200 p-3 rounded-xl shadow-sm text-lg font-semibold" onclick="handleCalcInput('9')">9</button>
+                        <button class="calc-btn bg-blue-100 p-3 rounded-xl shadow-sm text-lg font-semibold text-blue-700" onclick="handleCalcInput('/')">÷</button>
+
+                        <button class="calc-btn bg-slate-200 p-3 rounded-xl shadow-sm text-lg font-semibold" onclick="handleCalcInput('4')">4</button>
+                        <button class="calc-btn bg-slate-200 p-3 rounded-xl shadow-sm text-lg font-semibold" onclick="handleCalcInput('5')">5</button>
+                        <button class="calc-btn bg-slate-200 p-3 rounded-xl shadow-sm text-lg font-semibold" onclick="handleCalcInput('6')">6</button>
+                        <button class="calc-btn bg-blue-100 p-3 rounded-xl shadow-sm text-lg font-semibold text-blue-700" onclick="handleCalcInput('*')">×</button>
+
+                        <button class="calc-btn bg-slate-200 p-3 rounded-xl shadow-sm text-lg font-semibold" onclick="handleCalcInput('1')">1</button>
+                        <button class="calc-btn bg-slate-200 p-3 rounded-xl shadow-sm text-lg font-semibold" onclick="handleCalcInput('2')">2</button>
+                        <button class="calc-btn bg-slate-200 p-3 rounded-xl shadow-sm text-lg font-semibold" onclick="handleCalcInput('3')">3</button>
+                        <button class="calc-btn bg-blue-100 p-3 rounded-xl shadow-sm text-lg font-semibold text-blue-700" onclick="handleCalcInput('-')">-</button>
+
+                        <button class="calc-btn bg-gray-300 p-3 rounded-xl shadow-sm text-lg font-semibold" onclick="handleCalcInput('C')">C</button>
+                        <button class="calc-btn bg-slate-200 p-3 rounded-xl shadow-sm text-lg font-semibold" onclick="handleCalcInput('0')">0</button>
+                        <button class="calc-btn bg-slate-200 p-3 rounded-xl shadow-sm text-lg font-semibold" onclick="handleCalcInput('.')">.</button>
+                        <button class="calc-btn col-span-1 bg-blue-600 text-white p-3 rounded-xl shadow-lg text-lg font-bold" onclick="calculateResult()">=</button>
+                    </div>
+                </div>
+
+                <!-- 記帳輸入區 -->
+                <div class="bg-white p-4 rounded-xl shadow-lg border-2 border-slate-300 mt-6">
+                    <h3 id="expense-form-title" class="header-title text-xl font-semibold mb-3 text-slate-700">新增消費紀錄</h3>
+                    <input type="text" id="expense-item" class="w-full p-2 border rounded-lg mb-2" placeholder="品項 (如: 午餐, 門票)">
+                    <div class="flex space-x-2 mb-2">
+                        <select id="expense-currency" class="w-1/3 p-2 border rounded-lg bg-white text-sm font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-400">
+                            <option value="RMB">人民幣(¥)</option>
+                            <option value="TWD">台幣(NT$)</option>
+                        </select>
+                        <input type="number" id="expense-amount" class="w-2/3 p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400" placeholder="金額">
+                    </div>
+                    <select id="expense-payer" class="w-full p-2 border rounded-lg mb-3 bg-white text-sm font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-400">
+                        <option value="" disabled selected>選擇付款人...</option>
+                        <option value="毓芸">毓芸</option>
+                        <option value="媽媽">媽媽</option>
+                        <option value="俊安">俊安</option>
+                        <option value="哥哥">哥哥</option>
+                    </select>
+                    
+                    <!-- 照片上傳/拍照按鈕 -->
+                    <input type="file" id="expense-photo-input" accept="image/*" class="hidden" onchange="previewExpenseImage(event)">
+                    <div class="flex space-x-2 mb-3">
+                        <button onclick="document.getElementById('expense-photo-input').click()" class="flex-1 bg-slate-500 text-white p-2 rounded-lg hover:bg-slate-600 transition text-sm">
+                            <i class="fas fa-camera mr-1"></i> 上傳收據
+                        </button>
+                        <button id="add-expense-btn" onclick="addExpense()" class="flex-1 bg-blue-700 text-white p-2 rounded-lg font-bold hover:bg-blue-800 transition">
+                            <i class="fas fa-plus mr-1"></i> 新增記帳
+                        </button>
+                        <button id="cancel-edit-btn" onclick="cancelEdit()" class="hidden w-1/4 bg-gray-500 text-white p-2 rounded-lg font-bold hover:bg-gray-600 transition">
+                            取消
+                        </button>
+                    </div>
+                    <!-- 圖片預覽 -->
+                    <div id="photo-preview-container" class="hidden text-center p-2 border-t mt-2">
+                        <p class="text-xs text-gray-500 mb-1">預覽縮圖:</p>
+                        <img id="photo-preview" class="max-h-20 w-auto inline-block rounded-lg" alt="照片預覽">
+                    </div>
+                </div>
+
+                <!-- 旅途總花費 -->
+                <div class="bg-gradient-to-r from-blue-700 to-cyan-600 p-4 rounded-xl shadow-lg text-white mt-8 mb-2 flex justify-between items-center">
+                    <div>
+                        <h3 class="text-sm font-medium opacity-90"><i class="fas fa-chart-pie mr-1.5"></i>旅途總花費</h3>
+                        <p class="text-2xl font-bold mt-1 tracking-wider" id="total-expense-twd">NT$ 0</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-[10px] opacity-75">以當前匯率換算</p>
+                    </div>
+                </div>
+
+                <!-- 記帳歷史列表 -->
+                <h3 class="header-title text-xl font-semibold mt-4 mb-3 text-slate-700">記帳歷史</h3>
+                <div id="expense-history" class="space-y-3">
+                    <p id="no-expenses" class="text-center text-gray-500 italic">目前沒有記帳紀錄。</p>
+                </div>
+            </div>
+
+            <!-- LISTS (清單) 模組 -->
+            <div id="lists-tab" class="p-4 space-y-6 tab-content hidden">
+                <h2 class="header-title text-2xl font-bold text-center text-slate-700 mb-6">
+                    <i class="fas fa-clipboard-list text-cyan-600 mr-2"></i> 旅遊清單
+                </h2>
+
+                <!-- 行前準備 CheckList -->
+                <div class="bg-white p-4 rounded-xl shadow-lg border-2 border-blue-300">
+                    <h3 class="header-title text-xl font-semibold mb-4 text-blue-800"><i class="fas fa-check-double mr-2"></i> 行前準備 CheckList</h3>
+                    <ul id="checklist-items" class="space-y-2">
+                        <!-- CheckList 內容將由 JS 渲染 -->
+                    </ul>
+                    <button onclick="clearChecklist()" class="text-xs text-gray-500 mt-4 underline block w-full text-right">
+                        <i class="fas fa-times-circle mr-1"></i> 清空所有勾選
+                    </button>
+                </div>
+
+                <!-- 個人備忘錄 -->
+                <div class="bg-white p-4 rounded-xl shadow-lg border-2 border-slate-300">
+                    <h3 class="header-title text-xl font-semibold mb-4 text-slate-700"><i class="fas fa-edit mr-2"></i> 個人備忘錄</h3>
+                    <textarea id="memo-input" rows="6" class="w-full p-2 border rounded-lg mb-3 focus:outline-none focus:ring-2 focus:ring-blue-400" placeholder="輸入您的備忘錄或網址..."></textarea>
+                    <button onclick="saveMemo()" class="w-full bg-cyan-600 text-white p-2 rounded-lg font-bold hover:bg-cyan-700 transition">
+                        儲存備忘錄
+                    </button>
+                    <div id="memo-output" class="mt-4 p-3 bg-slate-50 border rounded-lg whitespace-pre-wrap break-words text-sm">
+                        <!-- 備忘錄內容將由 JS 渲染 -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- INFO (資訊) 模組 -->
+            <div id="info-tab" class="p-4 space-y-6 tab-content hidden">
+                <h2 class="header-title text-2xl font-bold text-center text-slate-700 mb-6">
+                    <i class="fas fa-info-circle text-cyan-600 mr-2"></i> 實用資訊
+                </h2>
+
+                <!-- 天氣連結 -->
+                <div class="bg-white p-4 rounded-xl shadow-lg border-2 border-slate-300">
+                    <h3 class="header-title text-xl font-semibold mb-3 text-slate-700">當地天氣預報</h3>
+                    <div class="space-y-2">
+                        <a href="https://www.accuweather.com/zh/cn/beijing/101066/weather-forecast/101066" target="_blank" class="block bg-blue-50 text-blue-800 p-3 rounded-lg text-center font-bold hover:bg-blue-100 transition border border-blue-100">
+                            <i class="fas fa-cloud-sun mr-2"></i> 北京 氣象連結
+                        </a>
+                        <a href="https://www.accuweather.com/zh/cn/datong/106364/weather-forecast/106364" target="_blank" class="block bg-blue-50 text-blue-800 p-3 rounded-lg text-center font-bold hover:bg-blue-100 transition border border-blue-100">
+                            <i class="fas fa-cloud-sun mr-2"></i> 山西大同 氣象連結
+                        </a>
+                    </div>
+                </div>
+
+                <!-- 緊急聯絡資訊 -->
+                <div class="bg-white p-4 rounded-xl shadow-lg border-2 border-blue-300">
+                    <h3 class="header-title text-xl font-semibold mb-3 text-blue-800">緊急聯絡電話 (中國大陸)</h3>
+                    <ul class="space-y-2">
+                        <li class="flex justify-between items-center border-b border-slate-100 pb-1">
+                            <span><i class="fas fa-user-shield mr-2 text-blue-600"></i> 報警</span>
+                            <a href="tel:110" class="text-lg font-mono text-blue-600 font-bold">110</a>
+                        </li>
+                        <li class="flex justify-between items-center border-b border-slate-100 pb-1">
+                            <span><i class="fas fa-ambulance mr-2 text-blue-600"></i> 救護</span>
+                            <a href="tel:120" class="text-lg font-mono text-blue-600 font-bold">120</a>
+                        </li>
+                        <li class="flex justify-between items-center border-b border-slate-100 pb-1">
+                            <span><i class="fas fa-fire mr-2 text-blue-600"></i> 消防</span>
+                            <a href="tel:119" class="text-lg font-mono text-blue-600 font-bold">119</a>
+                        </li>
+                        <li class="flex justify-between items-center">
+                            <span><i class="fas fa-globe mr-2 text-blue-600"></i> 駐當地辦事處 (例: 台灣)</span>
+                            <span class="text-sm font-mono text-gray-500">請自行替換為最新號碼</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- 行程特殊提醒 -->
+                <div class="bg-white p-4 rounded-xl shadow-lg border-2 border-slate-300">
+                    <h3 class="header-title text-xl font-semibold mb-3 text-slate-700">北京、山西 行程特殊提醒</h3>
+                    <p class="text-sm text-gray-700 mb-4 font-bold border-b border-gray-200 pb-2">
+                        北京歷史景區面積廣大需大量步行；山西氣候較為乾燥且日照強烈，請注意以下事項：
+                    </p>
+                    <div class="space-y-4">
+                        <div class="border-l-4 border-cyan-500 pl-3">
+                            <h4 class="font-bold text-cyan-700 text-sm mb-1">北京故宮博物院與天壇</h4>
+                            <ul class="list-disc pl-5 text-sm space-y-1 text-gray-700">
+                                <li>景區占地極廣，且多為石板路，務必穿著最舒適的運動鞋。</li>
+                                <li>夏季北京悶熱，隨身攜帶陽傘、墨鏡與足夠飲水。</li>
+                                <li>實名制預約嚴格，務必隨身攜帶台胞證查驗。</li>
+                            </ul>
+                        </div>
+                        <div class="border-l-4 border-cyan-500 pl-3">
+                            <h4 class="font-bold text-cyan-700 text-sm mb-1">搭乘高鐵注意事項</h4>
+                            <ul class="list-disc pl-5 text-sm space-y-1 text-gray-700">
+                                <li>中國高鐵安檢嚴格，防曬噴霧、指甲油等易燃物品容量有限制，建議帶塗抹式防曬。</li>
+                                <li>進站、乘車皆需刷台胞證（走人工或證件通道），請統一妥善保管。</li>
+                            </ul>
+                        </div>
+                        <div class="border-l-4 border-cyan-500 pl-3">
+                            <h4 class="font-bold text-cyan-700 text-sm mb-1">山西古建與佛教名山 (大同、五台山)</h4>
+                            <ul class="list-disc pl-5 text-sm space-y-1 text-gray-700">
+                                <li>懸空寺通道狹窄且陡峭，請注意腳下安全，患有懼高症者請斟酌。</li>
+                                <li>五台山為佛教聖地，參觀寺廟請遵守規定：不踩門檻、不大聲喧嘩、穿著端莊（勿穿無袖、短褲短裙）。</li>
+                                <li>山西氣候乾燥，早晚溫差大，請備好保濕用品與薄外套。</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 針對團隊的安全守則 -->
+                <div class="bg-white p-4 rounded-xl shadow-lg border-2 border-blue-300">
+                    <h3 class="header-title text-xl font-semibold mb-3 text-blue-800">針對團隊的安全守則</h3>
+                    <div class="space-y-4">
+                        <div>
+                            <h4 class="font-bold text-blue-700 text-sm mb-1"><i class="fas fa-wallet mr-1"></i> 1. 財物與證件 (台胞證最重要)</h4>
+                            <ul class="list-disc pl-5 text-sm space-y-1 text-gray-700">
+                                <li>台胞證等同通行證，住宿、高鐵、景區驗票都需實名制。建議由專人統一保管或各自妥善保管，千萬不可遺失。</li>
+                                <li>大部分地區使用微信或支付寶，建議提前確認餘額與綁定，現金備用即可。</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-blue-700 text-sm mb-1"><i class="fas fa-first-aid mr-1"></i> 2. 健康與飲食</h4>
+                            <ul class="list-disc pl-5 text-sm space-y-1 text-gray-700">
+                                <li>北方飲食口味偏重（鹹、酸），可提醒店家少鹽少油。</li>
+                                <li>夏季步行量極大，定時提醒所有人喝水休息，預防中暑與鐵腿。</li>
+                                <li>隨身準備腸胃藥、感冒藥、休足時間或痠痛貼布。</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-blue-700 text-sm mb-1"><i class="fas fa-user-shield mr-1"></i> 3. 防走散</h4>
+                            <ul class="list-disc pl-5 text-sm space-y-1 text-gray-700">
+                                <li>故宮、前門大街、高鐵站人潮擁擠，約定好走散時的集合地點或聯絡方式（確保手機有網路）。</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- 底部導航列 -->
+        <footer id="nav" class="absolute bottom-0 w-full bg-white border-t border-gray-200 z-30 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)]">
+            <div class="flex justify-around h-[68px]">
+                <button class="tab-button flex flex-col items-center justify-center p-2 flex-1 active text-blue-800" data-tab="plan" onclick="showTab('plan')">
+                    <i class="fas fa-calendar-alt text-xl mb-1"></i>
+                    <span class="text-[10px] font-medium leading-none">行程表</span>
+                </button>
+                <button class="tab-button flex flex-col items-center justify-center p-2 flex-1 text-gray-500" data-tab="guide" onclick="showTab('guide')">
+                    <i class="fas fa-map-marked-alt text-xl mb-1"></i>
+                    <span class="text-[10px] font-medium leading-none">導覽</span>
+                </button>
+                <button class="tab-button flex flex-col items-center justify-center p-2 flex-1 text-gray-500" data-tab="wallet" onclick="showTab('wallet')">
+                    <i class="fas fa-wallet text-xl mb-1"></i>
+                    <span class="text-[10px] font-medium leading-none">記帳</span>
+                </button>
+                <button class="tab-button flex flex-col items-center justify-center p-2 flex-1 text-gray-500" data-tab="lists" onclick="showTab('lists')">
+                    <i class="fas fa-list-check text-xl mb-1"></i>
+                    <span class="text-[10px] font-medium leading-none">清單</span>
+                </button>
+                <button class="tab-button flex flex-col items-center justify-center p-2 flex-1 text-gray-500" data-tab="info" onclick="showTab('info')">
+                    <i class="fas fa-circle-info text-xl mb-1"></i>
+                    <span class="text-[10px] font-medium leading-none">資訊</span>
+                </button>
+            </div>
+        </footer>
+
+        <!-- 刪除確認 Modal (預設隱藏) -->
+        <div id="delete-modal" class="absolute inset-0 bg-slate-900 bg-opacity-60 z-50 hidden flex items-center justify-center backdrop-blur-sm">
+            <div class="bg-white p-6 rounded-2xl shadow-2xl max-w-[85%] w-full mx-auto transform transition-all scale-100">
+                <div class="text-center mb-4">
+                    <i class="fas fa-exclamation-triangle text-4xl text-cyan-600 mb-3"></i>
+                    <h3 class="text-xl font-bold text-gray-800">確認刪除</h3>
+                </div>
+                <p class="text-gray-600 mb-6 text-center">確定要刪除這筆記帳紀錄嗎？<br><span class="text-xs text-blue-500">此動作無法復原。</span></p>
+                <div class="flex space-x-3">
+                    <button onclick="closeDeleteModal()" class="flex-1 py-2.5 bg-slate-100 text-slate-700 rounded-xl font-bold hover:bg-slate-200 transition">
+                        取消
+                    </button>
+                    <button onclick="performDelete()" class="flex-1 py-2.5 bg-blue-700 text-white rounded-xl font-bold hover:bg-blue-800 transition shadow-md">
+                        確認刪除
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </div> <!-- 結束手機版面容器 -->
+
+    <!-- JavaScript 邏輯 -->
+    <script>
+        const STORAGE_KEY_PREFIX = 'BEIJING_SHANXI_TRIP_V2_';
+        const APP_ID = typeof __app_id !== 'undefined' ? __app_id : 'default_trip';
+        const storageKeys = {
+            expenses: `${STORAGE_KEY_PREFIX}${APP_ID}_expenses`,
+            rate: `${STORAGE_KEY_PREFIX}${APP_ID}_rate`,
+            checklist: `${STORAGE_KEY_PREFIX}${APP_ID}_checklist`,
+            memo: `${STORAGE_KEY_PREFIX}${APP_ID}_memo`,
+        };
+        
+        let expenses = [];
+        let exchangeRate = 4.65;
+        let checklistStatus = {};
+        
+        let editingId = null;
+        let deletingId = null;
+
+        const BaiduMapLinks = {};
+
+        // --- 旅遊資料結構 (北京 + 山西) ---
+        const tripData = [
+            {
+                day: 1, date: '2026/06/26', city: '台灣 → 北京', accommodation: '漢庭酒店(北京前門店)', events: [
+                    { time: '12:05', title: '富宇君品集合', highlight: true, details: ['<a href="https://maps.app.goo.gl/CBDfdMVADSrvhZEw8" target="_blank" class="text-blue-600 underline"><i class="fas fa-map-marker-alt mr-1"></i>Google地圖連結</a>'] },
+                    { time: '12:20', title: '桃園國際機場', highlight: false, details: ['機場接駁車(未預定)'], transport: { icon: 'fa-bus', label: '接駁車' } },
+                    { time: '13:05', title: 'CHECK IN 逛免稅店', highlight: false, details: [] },
+                    { time: '16:05', title: '飛往北京首都國際機場', highlight: true, details: ['長榮航空 (BR716)'], transport: { icon: 'fa-plane', label: '航班' } },
+                    { time: '19:30', title: '抵達北京首都國際機場 入境', highlight: true, details: [] },
+                    { time: '20:30', title: '前往漢庭酒店(北京前門店)', highlight: false, details: ['機場接駁車(6月初預定)'], transport: { icon: 'fa-bus', label: '接駁車' } },
+                    { time: '21:30', title: '抵達酒店CHECK IN & 休息', highlight: false, details: ['住宿：漢庭酒店(北京前門店)'] }
+                ]
+            },
+            {
+                day: 2, date: '2026/06/27', city: '北京市區', accommodation: '漢庭酒店(北京前門店)', events: [
+                    { time: '06:30', title: '起床盥洗', highlight: false, details: [] },
+                    { time: '07:00', title: '吃早餐', highlight: false, details: ['美團外賣-護國寺小吃(東單店)', '前一晚先點餐'] },
+                    { time: '08:30', title: '前往北京故宮博物院', highlight: true, details: ['請講解(未預約)'], transport: { icon: 'fa-taxi', label: '打車' } },
+                    { time: '14:30', title: '自由活動 & 休息', highlight: false, details: [
+                        '姊姊一家自由活動',
+                        '媽媽如果累了就先飯店休息一陣子，休息好可下去三里河公園逛逛',
+                        '毓芸跟俊安看體力去附近走走'
+                    ] },
+                    { time: '16:45', title: '前往北京宮宴', highlight: true, details: [], transport: { icon: 'fa-walking', label: '步行' } },
+                    { time: '17:00', title: '宮宴換裝+拍照', highlight: false, details: [] },
+                    { time: '19:00', title: '北京宮宴', highlight: true, details: [] },
+                    { time: '21:00', title: '返回酒店', highlight: false, details: ['住宿：漢庭酒店(北京前門店)'], transport: { icon: 'fa-walking', label: '步行' } }
+                ]
+            },
+            {
+                day: 3, date: '2026/06/28', city: '北京市區', accommodation: '漢庭酒店(北京前門店)', events: [
+                    { time: '07:30', title: '起床盥洗', highlight: false, details: [] },
+                    { time: '08:00', title: '吃早餐', highlight: false, details: ['美團外賣-尹三豆汁(前門店)', '前一晚先點餐'] },
+                    { time: '09:00', title: '前往天壇', highlight: true, details: [], transport: { icon: 'fa-taxi', label: '打車' } },
+                    { time: '09:30', title: '遊覽天壇', highlight: false, details: [] },
+                    { time: '11:30', title: '吃午餐-南門涮肉', highlight: false, details: ['聽說超多人要排隊先取號，或是網路找代排隊'] },
+                    { time: '13:30', title: '前往先農壇', highlight: true, details: [], transport: { icon: 'fa-taxi', label: '打車' } },
+                    { time: '13:45', title: '遊覽先農壇', highlight: false, details: [] },
+                    { time: '15:45', title: '回飯店休息', highlight: false, details: [], transport: { icon: 'fa-taxi', label: '打車' } },
+                    { time: '17:30', title: '前往前門大街', highlight: true, details: [], transport: { icon: 'fa-walking', label: '步行' } },
+                    { time: '18:00', title: '前門大街、大柵欄逛吃', highlight: false, details: ['推薦必吃:都一處燒賣（有素）、吳裕泰冰淇淋、門釘肉餅、糖葫蘆、老北京酸奶、陳記鹵煮'] },
+                    { time: '20:00', title: '返回飯店', highlight: false, details: ['住宿：漢庭酒店(北京前門店)'], transport: { icon: 'fa-walking', label: '步行' } }
+                ]
+            },
+            {
+                day: 4, date: '2026/06/29', city: '北京 → 山西大同', accommodation: '益海府邸民宿(大同華嚴寺店)', events: [
+                    { time: '06:00', title: '起床盥洗', highlight: false, details: [] },
+                    { time: '06:30', title: '吃早餐', highlight: false, details: ['美團外賣-黑窯廠糖油餅', '前一晚先點餐，早上沒吃完可以帶著到高鐵站吃'] },
+                    { time: '07:00', title: '退房 & 前往高鐵北京北站', highlight: true, details: ['包車接送(未預約)'], transport: { icon: 'fa-van-shuttle', label: '包車' } },
+                    { time: '08:20', title: '搭乘高鐵前往山西大同', highlight: true, details: [], transport: { icon: 'fa-train', label: '高鐵' } },
+                    { time: '10:06', title: '抵達高鐵大同南站', highlight: true, details: [] },
+                    { time: '10:30', title: '前往益海府邸民宿(大同華嚴寺店)', highlight: false, details: [
+                        '持續關注看甚麼時候可預訂',
+                        '包車接送(已預約3台5人座)'
+                    ], transport: { icon: 'fa-van-shuttle', label: '包車' } },
+                    { time: '11:00', title: 'CHECK IN 休息一下', highlight: false, details: [] },
+                    { time: '11:30', title: '前往喜晉道-刀削麵 吃午餐', highlight: false, details: ['午餐暫定這家，如果人多再去備案(晉北劉姥姥豆麵)'], transport: { icon: 'fa-walking', label: '步行' } },
+                    { time: '12:30', title: '毓芸前往琉璃境做妝造', highlight: false, details: ['其他人可以先回民宿休息一下', '休息可先到華嚴寺逛逛 or 大同古城隨意逛'] },
+                    { time: '15:00', title: '搶鳳臨閣晚餐排隊號碼', highlight: true, details: ['俊安負責'] },
+                    { time: '15:30', title: '毓芸華嚴寺拍攝', highlight: false, details: [] },
+                    { time: '17:00', title: '拍攝結束還衣服', highlight: false, details: [] },
+                    { time: '17:30', title: '前往鳳臨閣 吃晚餐', highlight: true, details: ['如果沒搶到 備案: 1.花園大飯店中餐廳 2.北魏家宴'], transport: { icon: 'fa-walking', label: '步行' } },
+                    { time: '19:30', title: '大同古城夜遊', highlight: false, details: [] },
+                    { time: '22:00', title: '返回民宿', highlight: false, details: ['住宿：益海府邸民宿(大同華嚴寺店)'], transport: { icon: 'fa-walking', label: '步行' } }
+                ]
+            },
+            {
+                day: 5, date: '2026/06/30', city: '山西大同', accommodation: '益海府邸民宿(大同華嚴寺店)', events: [
+                    { time: '07:00', title: '起床盥洗', highlight: false, details: [] },
+                    { time: '07:30', title: '吃早餐', highlight: false, details: ['美團外賣-孫記包子(迎澤街店)', '前一晚先點餐'] },
+                    { time: '08:30', title: '前往雲岡石窟', highlight: true, details: ['包車9人座(已預約)'], transport: { icon: 'fa-van-shuttle', label: '包車' } },
+                    { time: '09:15', title: '遊覽雲岡石窟', highlight: false, details: ['午餐在景區內解決，小吃街找一家人少的吃'] },
+                    { time: '14:00', title: '返回大同古城', highlight: true, details: ['包車9人座(已預約)'], transport: { icon: 'fa-van-shuttle', label: '包車' } },
+                    { time: '14:45', title: '大同古城續遊', highlight: false, details: [
+                        '媽媽如果累了可以回民宿休息',
+                        '下午就在古城輕鬆逛'
+                    ] },
+                    { time: '18:00', title: '晚餐：花園大飯店中餐廳', highlight: true, details: [
+                        '如果前一晚沒吃到鳳臨閣這天可以再搶看看',
+                        '花園大飯店人太多就吃北魏家宴'
+                    ] },
+                    { time: '21:00', title: '前往觀看 如夢大同表演', highlight: true, details: ['要去的人可以一起去'], transport: { icon: 'fa-walking', label: '步行' } },
+                    { time: '22:30', title: '返回飯店', highlight: false, details: ['住宿：益海府邸民宿(大同華嚴寺店)'] }
+                ]
+            },
+            {
+                day: 6, date: '2026/07/01', city: '大同 → 五台山', accommodation: '五台山萬豪酒店', events: [
+                    { time: '06:30', title: '起床盥洗', highlight: false, details: [] },
+                    { time: '07:00', title: '吃早餐', highlight: false, details: ['美團外賣-龍聚祥燒賣(鼓樓店)', '前一晚先點餐'] },
+                    { time: '08:00', title: '退房 & 出發前往應縣木塔', highlight: true, details: ['包車9人座 全日 (已預約)'], transport: { icon: 'fa-van-shuttle', label: '包車' } },
+                    { time: '09:30', title: '遊覽應縣木塔', highlight: false, details: [] },
+                    { time: '11:00', title: '出發渾源吃午餐', highlight: false, details: [], transport: { icon: 'fa-van-shuttle', label: '包車' } },
+                    { time: '12:00', title: '吃午餐-蔡家酒樓', highlight: false, details: ['如果人太多就改吃北越恒山村'] },
+                    { time: '13:30', title: '遊覽懸空寺', highlight: true, details: ['僅在下面看不登臨'], transport: { icon: 'fa-van-shuttle', label: '包車' } },
+                    { time: '14:30', title: '出發前往五台山-梵境里小鎮', highlight: true, details: [], transport: { icon: 'fa-van-shuttle', label: '包車' } },
+                    { time: '18:00', title: '抵達酒店 CHECK IN', highlight: false, details: ['住宿：五台山萬豪酒店'] },
+                    { time: '18:30', title: '吃晚餐：境遇 ‧ 一品香素齋', highlight: true, details: ['如果人很多就在梵境里小鎮裡面逛吃'], transport: { icon: 'fa-walking', label: '步行' } },
+                    { time: '20:00', title: '梵境里小鎮夜遊', highlight: false, details: ['五台傳奇實境秀、千架無人機表演、水幕燈光秀、沉浸式街演'] },
+                    { time: '22:00', title: '返回飯店', highlight: false, details: ['住宿：五台山萬豪酒店'] }
+                ]
+            },
+            {
+                day: 7, date: '2026/07/02', city: '五台山 → 忻州', accommodation: '南宸‧汐上民宿', events: [
+                    { time: '06:00', title: '起床盥洗', highlight: false, details: [] },
+                    { time: '06:30', title: '退房 & 前往 德克士 吃早餐', highlight: true, details: [], transport: { icon: 'fa-van-shuttle', label: '包車' } },
+                    { time: '07:30', title: '前往 五爺廟 開始遊覽五台山', highlight: true, details: ['五爺廟-塔院寺-顯通寺-菩薩頂'] },
+                    { time: '12:00', title: '菩薩頂素齋', highlight: false, details: ['如果結束的早可以去普化寺素齋'] },
+                    { time: '13:00', title: '前往 殊像寺', highlight: true, details: ['車子到菩薩頂載我們過去', '殊像寺逛完可以去大文殊寺'], transport: { icon: 'fa-van-shuttle', label: '包車' } },
+                    { time: '15:00', title: '下山前往忻州古城', highlight: true, details: ['包車9人座(已預約)'], transport: { icon: 'fa-van-shuttle', label: '包車' } },
+                    { time: '17:00', title: '抵達南宸‧汐上民宿 CHECK IN', highlight: false, details: [] },
+                    { time: '17:30', title: '前往 悦華老菜館', highlight: true, details: ['包車載我們到菜館後結束'], transport: { icon: 'fa-van-shuttle', label: '包車' } },
+                    { time: '18:00', title: '吃晚餐', highlight: false, details: [] },
+                    { time: '19:30', title: '前往 忻洲古城', highlight: true, details: ['看非遺打鐵花表演！'], transport: { icon: 'fa-taxi', label: '打車' } },
+                    { time: '20:30', title: '忻洲古城夜遊', highlight: false, details: ['從打鐵花表演場慢慢逛回民宿'] },
+                    { time: '22:00', title: '返回民宿', highlight: false, details: ['住宿：南宸‧汐上民宿'] }
+                ]
+            },
+            {
+                day: 8, date: '2026/07/03', city: '忻州 → 北京', accommodation: '北京飯店 (待定)', events: [
+                    { time: '07:30', title: '起床盥洗', highlight: false, details: [] },
+                    { time: '08:00', title: '前往吃早餐-光明早餐店', highlight: false, details: ['現場吃'], transport: { icon: 'fa-walking', label: '步行' } },
+                    { time: '09:00', title: '退房寄存行李&忻州古城晨游', highlight: false, details: ['漫步忻州古城', '中午在古城裡簡單吃', '推薦必吃:烤豬蹄、麻葉、酸奶、豆腐丸子、保德油糕、新疆羊肉串、鮮榨沙棘汁、鹵豬蹄'] },
+                    { time: '13:50', title: '前往高鐵忻州西站', highlight: true, details: [], transport: { icon: 'fa-car', label: '民宿接送' } },
+                    { time: '14:20', title: '抵達高鐵忻州西站', highlight: false, details: [] },
+                    { time: '14:49', title: '搭乘高鐵前往北京北站', highlight: true, details: [], transport: { icon: 'fa-train', label: '高鐵' } },
+                    { time: '18:12', title: '抵達北京前往飯店', highlight: true, details: ['高鐵接送(未預定)', '飯店待定'], transport: { icon: 'fa-bus', label: '接駁車' } },
+                    { time: '19:30', title: '晚餐:璟雅軒 一鴨九吃', highlight: true, details: ['如果人很多就在南鑼鼓巷逛吃'] },
+                    { time: '21:30', title: '返回飯店', highlight: false, details: [], transport: { icon: 'fa-walking', label: '步行' } }
+                ]
+            },
+            {
+                day: 9, date: '2026/07/04', city: '北京 → 台灣', accommodation: '溫暖的家', events: [
+                    { time: '08:30', title: '吃早餐', highlight: false, details: ['美團外賣-待定', '前一晚先點餐'] },
+                    { time: '09:30', title: '退房&前往北京首都國際機場', highlight: true, details: [], transport: { icon: 'fa-bus', label: '接駁車' } },
+                    { time: '10:30', title: 'CHECK IN 免稅店', highlight: true, details: [] },
+                    { time: '13:55', title: '飛往桃園國際機場', highlight: true, details: ['長榮航空 (BR715)'], transport: { icon: 'fa-plane', label: '航班' } },
+                    { time: '17:05', title: '抵達桃園 入境', highlight: true, details: [] },
+                    { time: '18:00', title: '返回富宇君品', highlight: false, details: ['機場接送(未預約)'], transport: { icon: 'fa-bus', label: '接駁車' } },
+                    { time: '19:00', title: '抵達富宇君品吃晚餐', highlight: false, details: ['火鍋世家'] },
+                    { time: '21:00', title: '休息睡覺', highlight: false, details: [] }
+                ]
+            }
+        ];
+
+        // --- 更新 CHECKLIST 模組資料結構 ---
+        const checklistData = [
+            {
+                category: '證件與財物',
+                items: [
+                    '台胞證/護照(務必隨身攜帶，高鐵/景區皆需實名制)',
+                    '信用卡、下載微信支付/支付寶與適量現金'
+                ]
+            },
+            {
+                category: '衣物類(夏季透氣、防曬為主)',
+                items: [
+                    '至少9套衣物(9天8夜的穿著)',
+                    '透氣舒適衣褲(每人至少幾套備用)',
+                    '長袖薄外套/防曬外套(山西早晚溫差大、防曬)',
+                    '入寺廟端莊服飾(五台山不可穿無袖、短褲裙)',
+                    '內衣褲、襪子',
+                    '輕便雨具'
+                ]
+            },
+            {
+                category: '鞋類',
+                items: [
+                    '極舒適好走的運動鞋(故宮、天壇、古城步行極多)',
+                    '輕便拖鞋/涼鞋(晚上在酒店穿)'
+                ]
+            },
+            {
+                category: '防護保濕類(北方氣候乾燥)',
+                items: [
+                    '高倍數防曬（塗抹式，噴霧可能過不了高鐵安檢）',
+                    '太陽帽/遮陽傘、墨鏡',
+                    '保濕乳液、護唇膏、面膜',
+                    '消毒濕紙巾、面紙'
+                ]
+            },
+            {
+                category: '藥品類',
+                items: [
+                    '腸胃藥、感冒藥、退燒藥',
+                    '休足時間、痠痛貼布(重要！步行極多)',
+                    '暈車藥(部分山路備用)',
+                    'OK繃、常備個人藥物'
+                ]
+            },
+            {
+                category: '電子設備類',
+                items: [
+                    '手機、相機、大容量行動電源及充電器',
+                    '三腳架或手機穩定器'
+                ]
+            },
+            {
+                category: '其他雜項',
+                items: [
+                    '輕便雙肩包或隨身防盜小包',
+                    '保溫杯(隨時補充水分)',
+                    '牙刷、牙膏、個人洗漱用品'
+                ]
+            }
+        ];
+
+        // --- 更新 GUIDE 模組資料結構 ---
+        const guideArticles = [
+            {
+                title: '北京故宮',
+                subtitle: '明清兩代皇家宮殿',
+                content: '北京故宮，又稱紫禁城，始建於明永樂四年（1406年），是明清兩代皇宮，距今逾600年。佔地72萬平方米，擁有宮殿七十餘座，分為外朝與內廷。1925年改為博物院對外開放，1987年被列為世界文化遺產。故宮是世界上規模最大、保存最完整的木結構宮殿建築群，珍藏文物逾186萬件，為中國古代建築與文化的巔峰代表。',
+                icon: 'fa-chess-rook',
+                route: '午門-太和門-太和殿-中和殿-保和殿-乾清宮-交泰殿-坤寧宮-御花園-東六宮-珍寶館-皇極殿-寧壽宮-養性殿-樂壽堂-珍妃井-神武門',
+                mapUrl: ''
+            },
+            {
+                title: '前門大街',
+                subtitle: '百年老字號的商業街',
+                content: '前門大街位於北京中軸線南端，北起正陽門箭樓，始建於明正統元年（1436年），是明清皇帝出城赴天壇、山川壇的御路。自明代起，前門大街便是京城最繁華的商業街市，商賈雲集、車水馬龍。1965年正式定名，2008年風貌修缮後重新開放。如今，全聚德、同仁堂、六必居等眾多老字號匯聚於此，是體驗京味文化與國潮風尚的著名商業步行街。',
+                icon: 'fa-store',
+                route: '鮮魚口街-前門大街下半部-大柵欄-前門大街上半部',
+                mapUrl: ''
+            },
+            {
+                title: '天壇',
+                subtitle: '明清帝王祭天祈穀之地',
+                content: '天壇位於北京城南，始建於明永樂十八年（1420年），是明清兩代皇帝祭天、祈谷的專用祭壇，也是現存最大的古代祭祀建築群。主要建築有祈年殿、皇穹宇和圜丘壇，按「天圓地方」思想佈局。其中祈年殿為木結構圓形大殿，氣勢恢宏。天壇的聲學奇觀如回音壁、三音石亦聞名於世。1998年被列為世界文化遺產，是中國古代禮制與建築藝術的傑出代表。',
+                icon: 'fa-gopuram',
+                route: '東門進-七星石-七十二長廊-祈年殿-齋宮-丹陛橋-回音壁-圜丘-南門出',
+                mapUrl: ''
+            },
+            {
+                title: '先農壇',
+                subtitle: '皇家祭祀先農與親耕的場所',
+                content: '先農壇位於北京城中軸線南端西側，與天壇東西相對。始建於明永樂十八年（1420年），是明清兩代皇帝祭祀先農神並舉行親耕典禮的場所。主要建築有太歲殿、觀耕台、神倉、慶成宮等。如今先農壇內設有北京古代建築博物館，向公眾開放。2001年被列為全國重點文物保護單位，2024年作為“北京中軸線”組成部分入選世界遺產。',
+                icon: 'fa-leaf',
+                route: '北門進-太歲殿院落(拜殿)-神廚院落(文創店)-先農壇-觀耕台(一畝三分地)-具服殿-焚帛爐-神倉-北門離開',
+                mapUrl: ''
+            },
+            {
+                title: '大同古城',
+                subtitle: '塞外古都的歷史風韻',
+                content: '大同古城位於山西省大同市，古稱平城，曾為北魏都城、遼金陪都及明清重鎮，是首批國家級歷史文化名城。明洪武五年（1372年），大將軍徐達增築城池，形成周長7.24公里的府城。古城延續了棋盤式里坊格局，有“四大街、八小巷”之稱。城內匯聚了華嚴寺、善化寺及九龍壁等眾多遼金與明代古蹟，堪稱一座活的“中國古建築博物館”。',
+                icon: 'fa-city',
+                route: '夜遊路線：華嚴寺廣場-鼓樓東西街-東南邑-和陽門-太平樓-四牌樓\n日遊路線：華嚴寺廣場-純陽宮-善化寺-大同府文廟-帝君廟-鼓樓-九龍壁-代王府-法華寺',
+                mapUrl: ''
+            },
+            {
+                title: '雲岡石窟',
+                subtitle: '中國四大石窟之一，佛教藝術寶庫',
+                content: '雲岡石窟位於山西大同武周山南麓，始鑿於北魏和平元年（公元460年），由高僧曇曜主持開鑿。石窟依山開鑿，東西綿延約1公里，現存主要洞窟45個，大小造像59,000餘尊。早期「曇曜五窟」氣勢雄渾，第20窟露天大佛為其標誌。雲岡石窟融合了中亞與中原文化，開創了佛教藝術中國化的先河，被譽為公元5世紀世界雕刻藝術的巔峰。2001年，雲岡石窟被聯合國教科文組織列入《世界遺產名錄》。',
+                icon: 'fa-om',
+                route: '景區入口-曇曜廣場-禮佛大道-靈岩寺-第1～20窟-雲崗禮物-返程走路或搭電瓶車',
+                mapUrl: ''
+            },
+            {
+                title: '應縣木塔',
+                subtitle: '世界現存最古老最高大的木塔',
+                content: '應縣木塔，全稱佛宮寺釋迦塔，位於山西省朔州市應縣。始建於遼清寧二年（公元1056年），是世界上現存最高大、最古老的純木結構樓閣式建築。塔高67.31米，底層直徑30.27米，重達7,400多噸，全塔上下沒用一顆鐵釘，全靠木構件互相卯榫咬合而成。其塔身內外共使用了54種不同形制的斗拱，規模宏大、種類繁多，被譽為“中國古建築斗拱博物館”。1961年，應縣木塔被列為第一批全國重點文物保護單位，並於2016年被認證為“世界上最高的木塔”。',
+                icon: 'fa-monument',
+                route: '',
+                mapUrl: ''
+            },
+            {
+                title: '懸空寺',
+                subtitle: '建在峭壁上的奇險建築',
+                content: '懸空寺，原稱“玄空閣”，位於山西省大同市渾源縣恆山金龍峽翠屏峰峭壁間。它始建於北魏太和十五年（公元491年），距今已逾1500年，是國內現存唯一佛、道、儒“三教合一”的古寺。整座寺院上載危崖，下臨深谷，樓閣懸空，以“奇、懸、巧”的建築特色聞名於世。寺內擁有殿閣四十餘間，李白曾贊其“壯觀”，徐霞客更驚嘆為“天下巨觀”。1982年，懸空寺被列為全國重點文物保護單位。',
+                icon: 'fa-mountain',
+                route: '',
+                mapUrl: ''
+            },
+            {
+                title: '五台山',
+                subtitle: '中國佛教四大名山之首',
+                content: '五台山位於山西省忻州市，是中國佛教四大名山之首，也是世界五大佛教聖地之一。作為文殊菩薩的道場，其佛教始於東漢，並因是中國唯一漢傳與藏傳佛教並存的名山而獨具特色。2009年，五台山因其將自然地貌與佛教文化完美融合的獨特文化景觀，被列入世界文化遺產。',
+                icon: 'fa-vihara',
+                route: '五爺廟-塔院寺-顯通寺-菩薩頂',
+                mapUrl: ''
+            },
+            {
+                title: '忻州古城',
+                subtitle: '晉北商貿重鎮的歷史記憶',
+                content: '忻州古城位於山西省忻州市，始建於東漢建安二十年（公元215年），距今已有1800餘年歷史，古稱“秀容古城”。古城素有“晉北鎖鑰”之稱，是中俄萬里茶路上的歷史文化名城。城內建築規制完整，呈現“四面城牆八座門”的格局。現存秀容書院、關帝廟、泰山廟等歷史遺存，其中秀容書院是山西省保存完好且仍具教育功能的書院之一。2017年啓動保護改造後，古城集文化展示、特色美食、非遺體驗於一體，是一座充滿煙火氣的“活態民俗博物館”。',
+                icon: 'fa-fort-awesome',
+                route: '夜遊路線:北門城樓-南北大街-明月樓-秀容書院-關帝廟-南門城樓\n日遊路線:南門-關帝廟-秀容書院-西園-財神廟-泰山廟巷-南北大街-明月樓-北門',
+                mapUrl: ''
+            },
+            {
+                title: '南鑼鼓巷',
+                subtitle: '老北京風情的胡同巷弄',
+                content: '內容後補',
+                icon: 'fa-bicycle',
+                route: '建議遊玩路線後補',
+                mapUrl: ''
+            }
+        ];
+
+
+        // --- 核心功能函數 ---
+
+        /**
+         * 導航切換
+         */
+        function showTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.add('hidden');
+            });
+            document.getElementById(`${tabName}-tab`).classList.remove('hidden');
+
+            document.querySelectorAll('.tab-button').forEach(btn => {
+                btn.classList.remove('active');
+                btn.classList.remove('text-blue-800');
+                btn.classList.add('text-gray-500');
+            });
+            const activeBtn = document.querySelector(`.tab-button[data-tab="${tabName}"]`);
+            activeBtn.classList.add('active');
+            activeBtn.classList.remove('text-gray-500');
+            activeBtn.classList.add('text-blue-800');
+            
+            if (tabName === 'plan') renderItinerary();
+            if (tabName === 'lists') renderLists();
+        }
+        
+        // --- 2. GUIDE (深度導覽) 模組 ---
+        function renderGuide() {
+            const articleContainer = document.getElementById('guide-articles');
+            articleContainer.innerHTML = guideArticles.map((article, index) => {
+                const routeHtml = article.route ? `
+                    <button class="w-full mt-4 text-left p-3 bg-blue-50 text-blue-800 font-bold rounded-xl transition hover:bg-blue-100 flex justify-between items-center" 
+                            onclick="toggleCollapsible('route-content-${index}', this)">
+                        <span><i class="fas fa-map-signs mr-2 text-cyan-600"></i> 建議遊玩路線</span>
+                        <i class="fas fa-chevron-down transition-transform duration-300 transform"></i>
+                    </button>
+                    
+                    <div id="route-content-${index}" class="collapsible-content">
+                        <div class="p-4 bg-slate-50 border border-t-0 border-slate-100 rounded-b-xl mt-1">
+                            <p class="text-xs font-semibold text-gray-800 mb-3">路線：</p>
+                            <p class="text-sm text-blue-700 font-medium whitespace-pre-wrap mb-4">${article.route}</p>
+                            
+                            ${article.mapUrl ? `
+                                <div class="mt-3 text-center">
+                                    <a href="${article.mapUrl}" target="_blank" class="inline-block w-full bg-cyan-600 text-white px-4 py-3 rounded-xl font-bold shadow hover:bg-cyan-700 transition active:bg-cyan-800">
+                                        <i class="fas fa-map mr-2"></i> 查看完整路線圖
+                                    </a>
+                                </div>
+                            ` : ''}
+                        </div>
+                    </div>
+                ` : '';
+
+                return `
+                <div class="bg-white p-4 rounded-xl shadow-md border border-slate-200">
+                    <h3 class="header-title text-xl font-bold text-blue-900 mb-1">
+                        <i class="fas ${article.icon} text-cyan-600 mr-2"></i> ${article.title}
+                    </h3>
+                    <p class="text-sm font-light text-gray-500 mb-3 border-b border-slate-100 pb-2">${article.subtitle}</p>
+                    <p class="text-sm text-gray-700 whitespace-pre-wrap leading-relaxed">${article.content}</p>
+                    ${routeHtml}
+                </div>
+            `}).join('');
+        }
+
+        function toggleCollapsible(id, button) {
+            const content = document.getElementById(id);
+            const icon = button.querySelector('.fas.fa-chevron-down');
+
+            if (content.classList.contains('expanded')) {
+                content.classList.remove('expanded');
+                icon.classList.remove('rotate-180');
+            } else {
+                content.classList.add('expanded');
+                icon.classList.add('rotate-180');
+            }
+        }
+        
+        // --- 1. PLAN (行程表) 模組 ---
+        function renderItinerary() {
+            const listContainer = document.getElementById('itinerary-list');
+            listContainer.innerHTML = '';
+
+            const generateEventsHtml = (events, isCompact, accommodation) => {
+                let content = '';
+                events.forEach(event => {
+                    const highlightClass = 'bg-white shadow-sm border';
+                    const borderColor = event.highlight ? 'border-blue-300' : 'border-slate-100';
+                    const timeHighlight = event.highlight ? 'text-blue-800 font-bold' : 'text-slate-500 font-semibold';
+                    const dotColor = event.highlight ? 'bg-blue-800' : 'bg-cyan-500';
+                    
+                    const detailsHtml = event.details.map(detail => 
+                        `<p class="text-[11px] text-gray-600 mt-1 pl-1.5 border-l-2 border-slate-200">${detail}</p>`
+                    ).join('');
+
+                    let foodItemsHtml = '';
+                    if (!isCompact && event.foodItems && event.foodItems.length > 0) {
+                        foodItemsHtml = event.foodItems.map(category => {
+                            const itemsHtml = category.items.map(item => {
+                                const link = BaiduMapLinks[item];
+                                if (link) {
+                                    return `
+                                        <a href="${link}" target="_blank" class="inline-flex items-center text-[11px] text-blue-700 bg-blue-50 rounded-lg px-2 py-1 mt-1.5 mr-2 hover:bg-blue-100 border border-blue-100 transition">
+                                            <i class="fas fa-map-pin mr-1 text-cyan-600"></i> ${item}
+                                        </a>
+                                    `;
+                                } else {
+                                    return `<span class="inline-block text-[11px] text-slate-700 bg-slate-100 rounded-lg px-2 py-1 mt-1.5 mr-2">${item}</span>`;
+                                }
+                            }).join('');
+                            return `
+                                <div class="mt-3 pt-2 border-t border-dashed border-slate-200">
+                                    <p class="text-xs font-bold text-blue-700 mb-1">${category.type}:</p>
+                                    <div class="flex flex-wrap">${itemsHtml}</div>
+                                </div>
+                            `;
+                        }).join('');
+                    }
+
+                    // 判斷交通工具並生成標籤
+                    let transportHtml = '';
+                    if (event.transport) {
+                        if (isCompact) {
+                            transportHtml = `<div class="mt-1.5 text-[9px] font-medium text-cyan-700 bg-cyan-50 border border-cyan-100 px-1.5 py-0.5 rounded flex items-center w-max shadow-sm"><i class="fas ${event.transport.icon} mr-1 opacity-80"></i> ${event.transport.label}</div>`;
+                        } else {
+                            transportHtml = `
+                                <div class="absolute right-3 top-3.5 text-[10px] font-medium text-cyan-700 bg-cyan-50 border border-cyan-100 px-2 py-0.5 rounded-lg flex items-center shadow-sm z-10">
+                                    <i class="fas ${event.transport.icon} mr-1.5 opacity-80"></i> ${event.transport.label}
+                                </div>
+                            `;
+                        }
+                    }
+
+                    const titleClass = isCompact ? 'text-sm pr-0 leading-snug' : 'text-base pr-14';
+                    const paddingClass = isCompact ? 'p-2.5' : 'p-3.5';
+                    const timelineClass = isCompact ? 'pl-4 pb-4 timeline-item compact' : 'pl-7 pb-6 timeline-item';
+                    const dotStyle = isCompact ? 'left: 0.15rem; width: 10px; height: 10px; top: 0.4rem;' : '';
+                    
+                    let accommHtml = '';
+                    if (accommodation && !isCompact && (event.time.includes('返回') || event.time.includes('抵達酒店') || event.time.includes('抵達飯店'))) {
+                        accommHtml = `<div class="mt-3 bg-slate-50 p-2 rounded-lg border border-slate-100"><p class="text-xs text-blue-800 font-semibold"><i class="fas fa-bed mr-1.5 text-cyan-600"></i>住宿: ${accommodation}</p></div>`;
+                    }
+
+                    content += `
+                        <div class="relative ${timelineClass}">
+                            <div class="timeline-dot ${dotColor}" style="${dotStyle}"></div>
+                            <div class="relative ${paddingClass} ${highlightClass} ${borderColor} rounded-2xl ${isCompact ? 'ml-1' : 'ml-3'}">
+                                ${!isCompact ? transportHtml : ''}
+                                <p class="${isCompact ? 'text-[11px]' : 'text-sm'} ${timeHighlight} flex items-center">
+                                    ${event.time}
+                                    ${event.highlight && !isCompact ? '<span class="ml-2 w-1.5 h-1.5 rounded-full bg-cyan-500"></span>' : ''}
+                                </p>
+                                <p class="${titleClass} font-bold text-slate-800 mt-1">${event.title}</p>
+                                ${isCompact ? transportHtml : ''}
+                                <div class="mt-1.5 space-y-1">
+                                    ${detailsHtml}
+                                </div>
+                                ${foodItemsHtml} 
+                                ${accommHtml}
+                            </div>
+                        </div>
+                    `;
+                });
+                return content;
+            };
+
+            tripData.forEach((dayInfo, index) => {
+                const isExpanded = ''; 
+                const iconRotate = '';
+                const contentId = `day-content-${index}`;
+
+                let dayContentHtml = '';
+
+                if (dayInfo.isSplitPlan) {
+                    dayContentHtml = `
+                        <div class="flex flex-row space-x-1 sm:space-x-2">
+                            <div class="w-1/2 border-r border-slate-200 pr-1">
+                                <div class="text-center font-bold text-blue-800 mb-3 text-xs bg-blue-50 py-1.5 rounded-lg border border-blue-100 shadow-sm">方案 A</div>
+                                ${generateEventsHtml(dayInfo.planA, true, dayInfo.accommodation)}
+                            </div>
+                            <div class="w-1/2 pl-1">
+                                <div class="text-center font-bold text-cyan-700 mb-3 text-xs bg-cyan-50 py-1.5 rounded-lg border border-cyan-100 shadow-sm">方案 B</div>
+                                ${generateEventsHtml(dayInfo.planB, true, dayInfo.accommodation)}
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    dayContentHtml = generateEventsHtml(dayInfo.events, false, dayInfo.accommodation);
+                }
+
+                listContainer.innerHTML += `
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 mb-4 overflow-hidden">
+                        <button class="w-full flex justify-between items-center p-4 bg-white hover:bg-slate-50 transition text-left" onclick="toggleCollapsible('${contentId}', this)">
+                            <div class="flex items-center">
+                                <div class="bg-gradient-to-br from-blue-800 to-blue-900 text-white rounded-xl p-2 mr-3 text-center min-w-[3.5rem] shadow-sm">
+                                    <span class="text-[10px] block font-medium opacity-80">DAY</span>
+                                    <span class="text-xl font-bold leading-none">${dayInfo.day}</span>
+                                </div>
+                                <div>
+                                    <h3 class="header-title text-lg font-bold text-slate-800">${dayInfo.city}</h3>
+                                    <span class="text-xs text-cyan-700 font-medium">${dayInfo.date}</span>
+                                </div>
+                            </div>
+                            <div class="w-8 h-8 rounded-full bg-slate-50 flex items-center justify-center border border-slate-100">
+                                <i class="fas fa-chevron-down text-slate-400 transition-transform duration-300 ${iconRotate}"></i>
+                            </div>
+                        </button>
+                        
+                        <div id="${contentId}" class="collapsible-content ${isExpanded}">
+                            <div class="p-3 sm:p-4 pt-6 bg-slate-50/50 border-t border-slate-100">
+                                ${dayContentHtml}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+
+        // --- 3. WALLET (記帳與匯率) 模組 ---
+        function initWallet() {
+            try {
+                const storedRate = localStorage.getItem(storageKeys.rate);
+                exchangeRate = storedRate ? parseFloat(storedRate) : 4.65;
+            } catch (e) {
+                exchangeRate = 4.65;
+            }
+
+            try {
+                const storedExpenses = localStorage.getItem(storageKeys.expenses);
+                if (storedExpenses) {
+                    expenses = JSON.parse(storedExpenses);
+                    // 兼容舊資料格式
+                    expenses = expenses.map(e => {
+                        if (e.amount === undefined) {
+                            e.amount = e.amountRMB;
+                            e.currency = 'RMB';
+                            let matchedPayer = '未指定';
+                            if (e.item.includes('毓芸付款')) { 
+                                matchedPayer = '毓芸'; 
+                                e.item = e.item.replace(' (毓芸付款)', ''); 
+                            }
+                            if (e.item.includes('來回機票')) { 
+                                e.amount = 79819; 
+                                e.currency = 'TWD'; 
+                            }
+                            e.payer = matchedPayer;
+                        }
+                        return e;
+                    });
+                } else {
+                    // 初始化新增的三筆記帳資料
+                    expenses = [
+                        { id: Date.now() + 3, item: '山西包車3天', amount: 3900, currency: 'RMB', payer: '毓芸', timestamp: new Date().toLocaleString('zh-TW'), photoBase64: null },
+                        { id: Date.now() + 2, item: '山西高鐵接送(3台5人座)', amount: 125, currency: 'RMB', payer: '毓芸', timestamp: new Date().toLocaleString('zh-TW'), photoBase64: null },
+                        { id: Date.now() + 1, item: '來回機票', amount: 79819, currency: 'TWD', payer: '毓芸', timestamp: new Date().toLocaleString('zh-TW'), photoBase64: null }
+                    ];
+                    saveExpenses();
+                }
+            } catch (e) {
+                console.error("Error loading expenses from LocalStorage:", e);
+                expenses = [];
+            }
+            
+            document.getElementById('exchange-rate').value = exchangeRate.toFixed(2);
+            document.getElementById('current-rate').textContent = exchangeRate.toFixed(2);
+            renderExpenses();
+        }
+
+        function saveExchangeRate() {
+            const newRate = parseFloat(document.getElementById('exchange-rate').value);
+            if (isNaN(newRate) || newRate <= 0) {
+                alertModal('請輸入有效的匯率！', 'error');
+                return;
+            }
+            exchangeRate = newRate;
+            localStorage.setItem(storageKeys.rate, exchangeRate.toString());
+            document.getElementById('current-rate').textContent = exchangeRate.toFixed(2);
+            calculateResult();
+            renderExpenses();
+            alertModal(`匯率已更新為 ${exchangeRate.toFixed(2)}`, 'success');
+        }
+
+        function handleCalcInput(value) {
+            const input = document.getElementById('calc-input');
+            const currentValue = input.value;
+
+            if (value === 'C') {
+                input.value = '';
+                document.getElementById('calc-result').textContent = '總額 (RMB): 0.00';
+                document.getElementById('twd-result').textContent = '換算 (TWD): 0.00';
+                return;
+            }
+            
+            if ('+-*/'.includes(value)) {
+                const lastChar = currentValue.slice(-1);
+                if ('+-*/'.includes(lastChar) || currentValue === '') {
+                } else {
+                    input.value += value;
+                }
+            } else if (value === '.') {
+                 const lastChar = currentValue.slice(-1);
+                 if (lastChar !== '.') {
+                     input.value += value;
+                 }
+            } else {
+                input.value += value;
+            }
+            calculateResult(false);
+        }
+
+        function calculateResult(showToast = true) {
+            const input = document.getElementById('calc-input').value.replace(/×/g, '*').replace(/÷/g, '/');
+            let resultRMB = 0;
+            
+            if (input.trim() === '') {
+                 document.getElementById('calc-result').textContent = '總額 (RMB): 0.00';
+                 document.getElementById('twd-result').textContent = '換算 (TWD): 0.00';
+                 return;
+            }
+
+            try {
+                if (!/^[0-9\.\+\-\*\/\(\)\s]+$/.test(input)) {
+                     throw new Error('不支援的算式格式');
+                }
+                
+                resultRMB = eval(input);
+                if (isNaN(resultRMB) || !isFinite(resultRMB)) {
+                    throw new Error('無效的計算結果');
+                }
+                
+                const resultTWD = resultRMB * exchangeRate;
+
+                document.getElementById('calc-result').textContent = `總額 (RMB): ${resultRMB.toFixed(2)}`;
+                document.getElementById('twd-result').textContent = `換算 (TWD): ${resultTWD.toFixed(2)}`;
+
+                if (showToast) alertModal(`計算完成: ${resultRMB.toFixed(2)} RMB`, 'success');
+
+            } catch (e) {
+                document.getElementById('calc-result').textContent = '算式錯誤 (RMB): Error';
+                document.getElementById('twd-result').textContent = '換算 (TWD): 0.00';
+                if (showToast) alertModal('算式錯誤，請檢查輸入！', 'error');
+            }
+        }
+
+        let currentPhotoBase64 = null;
+        function previewExpenseImage(event) {
+            const file = event.target.files[0];
+            if (!file) {
+                currentPhotoBase64 = null;
+                document.getElementById('photo-preview-container').classList.add('hidden');
+                return;
+            }
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = new Image();
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    const MAX_WIDTH = 150;
+                    const scaleFactor = MAX_WIDTH / img.width;
+                    const width = MAX_WIDTH;
+                    const height = img.height * scaleFactor;
+
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+
+                    currentPhotoBase64 = canvas.toDataURL('image/jpeg', 0.7);
+                    document.getElementById('photo-preview').src = currentPhotoBase64;
+                    document.getElementById('photo-preview-container').classList.remove('hidden');
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function addExpense() {
+            const itemInput = document.getElementById('expense-item');
+            const amountInput = document.getElementById('expense-amount');
+            const currencyInput = document.getElementById('expense-currency');
+            const payerInput = document.getElementById('expense-payer');
+            
+            const item = itemInput.value.trim();
+            const amount = parseFloat(amountInput.value);
+            const currency = currencyInput.value;
+            const payer = payerInput.value;
+
+            if (item === '' || isNaN(amount) || amount <= 0 || !payer) {
+                alertModal('請輸入完整的品項、金額並選擇付款人！', 'error');
+                return;
+            }
+
+            if (editingId) {
+                const index = expenses.findIndex(e => e.id === editingId);
+                if (index !== -1) {
+                    expenses[index].item = item;
+                    expenses[index].amount = amount;
+                    expenses[index].currency = currency;
+                    expenses[index].payer = payer;
+                    if (currentPhotoBase64) {
+                        expenses[index].photoBase64 = currentPhotoBase64;
+                    }
+                    alertModal('記帳紀錄已更新！', 'success');
+                }
+                cancelEdit();
+            } else {
+                const newExpense = {
+                    id: Date.now(),
+                    item: item,
+                    amount: amount,
+                    currency: currency,
+                    payer: payer,
+                    timestamp: new Date().toLocaleString('zh-TW'),
+                    photoBase64: currentPhotoBase64
+                };
+                expenses.unshift(newExpense);
+                alertModal('記帳紀錄已新增！', 'success');
+            }
+
+            saveExpenses();
+            renderExpenses();
+
+            if (!editingId) {
+                clearExpenseForm();
+            }
+        }
+
+        function clearExpenseForm() {
+            document.getElementById('expense-item').value = '';
+            document.getElementById('expense-amount').value = '';
+            document.getElementById('expense-currency').value = 'RMB';
+            document.getElementById('expense-payer').value = '';
+            document.getElementById('expense-photo-input').value = '';
+            currentPhotoBase64 = null;
+            document.getElementById('photo-preview-container').classList.add('hidden');
+        }
+
+        function editExpense(id) {
+            const expense = expenses.find(e => e.id === id);
+            if (!expense) return;
+
+            editingId = id;
+            
+            document.getElementById('expense-item').value = expense.item;
+            document.getElementById('expense-amount').value = expense.amount !== undefined ? expense.amount : expense.amountRMB;
+            document.getElementById('expense-currency').value = expense.currency || 'RMB';
+            
+            if (expense.payer && expense.payer !== '未指定') {
+                document.getElementById('expense-payer').value = expense.payer;
+            } else {
+                document.getElementById('expense-payer').value = '';
+            }
+            
+            if (expense.photoBase64) {
+                document.getElementById('photo-preview').src = expense.photoBase64;
+                document.getElementById('photo-preview-container').classList.remove('hidden');
+                currentPhotoBase64 = null;
+            } else {
+                document.getElementById('photo-preview-container').classList.add('hidden');
+                currentPhotoBase64 = null;
+            }
+
+            document.getElementById('expense-form-title').textContent = '編輯消費紀錄';
+            const addBtn = document.getElementById('add-expense-btn');
+            addBtn.innerHTML = '<i class="fas fa-save mr-1"></i> 儲存修改';
+            addBtn.classList.remove('bg-blue-700', 'hover:bg-blue-800');
+            addBtn.classList.add('bg-cyan-600', 'hover:bg-cyan-700');
+            
+            document.getElementById('cancel-edit-btn').classList.remove('hidden');
+            document.getElementById('content').scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function cancelEdit() {
+            editingId = null;
+            clearExpenseForm();
+
+            document.getElementById('expense-form-title').textContent = '新增消費紀錄';
+            const addBtn = document.getElementById('add-expense-btn');
+            addBtn.innerHTML = '<i class="fas fa-plus mr-1"></i> 新增記帳';
+            addBtn.classList.add('bg-blue-700', 'hover:bg-blue-800');
+            addBtn.classList.remove('bg-cyan-600', 'hover:bg-cyan-700');
+            
+            document.getElementById('cancel-edit-btn').classList.add('hidden');
+        }
+
+        function showDeleteModal(id) {
+            deletingId = id;
+            document.getElementById('delete-modal').classList.remove('hidden');
+        }
+
+        function closeDeleteModal() {
+            deletingId = null;
+            document.getElementById('delete-modal').classList.add('hidden');
+        }
+
+        function performDelete() {
+            if (deletingId) {
+                expenses = expenses.filter(e => e.id !== deletingId);
+                saveExpenses();
+                renderExpenses();
+                
+                if (editingId === deletingId) {
+                    cancelEdit();
+                }
+
+                alertModal('紀錄已刪除', 'info');
+            }
+            closeDeleteModal();
+        }
+
+        function saveExpenses() {
+            localStorage.setItem(storageKeys.expenses, JSON.stringify(expenses));
+        }
+
+        function renderExpenses() {
+            const historyContainer = document.getElementById('expense-history');
+            let totalTWD = 0;
+
+            if (expenses.length === 0) {
+                historyContainer.innerHTML = '<div class="text-center py-8 bg-slate-50 rounded-xl border border-dashed border-slate-200"><i class="fas fa-receipt text-3xl text-slate-300 mb-2"></i><p id="no-expenses" class="text-sm text-gray-500">目前沒有記帳紀錄</p></div>';
+                document.getElementById('total-expense-twd').textContent = 'NT$ 0';
+                return;
+            }
+
+            historyContainer.innerHTML = expenses.map(exp => {
+                const currency = exp.currency || 'RMB';
+                const baseAmount = exp.amount !== undefined ? exp.amount : exp.amountRMB;
+                const payer = exp.payer || '未指定';
+                
+                let mainDisplay = '';
+                let subDisplay = '';
+                
+                if (currency === 'RMB') {
+                    const amountTWD = baseAmount * exchangeRate;
+                    totalTWD += amountTWD;
+                    mainDisplay = `¥ ${baseAmount.toFixed(2)}`;
+                    subDisplay = `NT$ ${amountTWD.toFixed(0)}`;
+                } else {
+                    const amountRMB = baseAmount / exchangeRate;
+                    totalTWD += baseAmount;
+                    mainDisplay = `NT$ ${baseAmount.toFixed(0)}`;
+                    subDisplay = `¥ ${amountRMB.toFixed(2)}`;
+                }
+
+                const photoHtml = exp.photoBase64 ? 
+                    `<img src="${exp.photoBase64}" class="w-12 h-12 object-cover rounded-xl shadow-sm border border-slate-100 mr-3" alt="收據縮圖">` : 
+                    `<div class="w-12 h-12 flex items-center justify-center bg-slate-100 text-slate-400 rounded-xl mr-3 flex-shrink-0"><i class="fas fa-image"></i></div>`;
+                
+                return `
+                    <div class="flex items-center bg-white p-3 rounded-2xl shadow-sm border border-slate-100 justify-between group relative overflow-hidden">
+                        <div class="absolute left-0 top-0 bottom-0 w-1 bg-blue-500"></div>
+                        <div class="flex items-center flex-grow overflow-hidden pl-2">
+                            ${photoHtml}
+                            <div class="min-w-0 pr-2">
+                                <p class="font-bold text-slate-800 text-[15px] truncate">${exp.item}</p>
+                                <div class="flex items-center mt-1 space-x-2">
+                                    <span class="inline-block bg-blue-100 text-blue-800 text-[10px] px-1.5 py-0.5 rounded-md font-semibold"><i class="fas fa-user text-[9px] mr-0.5"></i>${payer}</span>
+                                    <span class="text-[10px] text-gray-400">${exp.timestamp.split(' ')[0]}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="text-right ml-1 flex-shrink-0 flex flex-col items-end">
+                            <p class="font-extrabold text-blue-800 text-lg leading-tight whitespace-nowrap">${mainDisplay}</p>
+                            <p class="text-xs text-cyan-700 font-medium whitespace-nowrap">${subDisplay}</p>
+                            
+                            <div class="mt-1 space-x-1 flex">
+                                <button onclick="editExpense(${exp.id})" class="text-slate-400 hover:text-blue-600 transition p-1.5 bg-slate-50 rounded-lg border border-transparent hover:border-blue-100" title="編輯">
+                                    <i class="fas fa-pen text-[10px]"></i>
+                                </button>
+                                <button onclick="showDeleteModal(${exp.id})" class="text-slate-400 hover:text-red-500 transition p-1.5 bg-slate-50 rounded-lg border border-transparent hover:border-red-100" title="刪除">
+                                    <i class="fas fa-trash-alt text-[10px]"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            document.getElementById('total-expense-twd').textContent = `NT$ ${totalTWD.toLocaleString('zh-TW', { maximumFractionDigits: 0 })}`;
+        }
+
+        // --- 4. LISTS (清單) 模組 ---
+        function initLists() {
+            try {
+                 const storedStatus = localStorage.getItem(storageKeys.checklist);
+                 checklistStatus = storedStatus ? JSON.parse(storedStatus) : {};
+            } catch (e) {
+                 checklistStatus = {};
+            }
+
+            try {
+                 const storedMemo = localStorage.getItem(storageKeys.memo);
+                 if (storedMemo) {
+                    document.getElementById('memo-input').value = storedMemo;
+                 }
+            } catch (e) {}
+            
+            renderLists();
+        }
+
+        function renderLists() {
+            renderChecklist();
+            renderMemo();
+        }
+
+        function renderChecklist() {
+            const listContainer = document.getElementById('checklist-items');
+            let html = '';
+            let globalIndex = 0;
+
+            checklistData.forEach(category => {
+                html += `<li class="font-bold text-blue-900 mt-5 mb-3 border-b border-blue-100 pb-1.5 flex items-center text-sm"><i class="fas fa-caret-right mr-2 text-cyan-600"></i>${category.category}</li>`;
+                
+                category.items.forEach(item => {
+                     const isChecked = checklistStatus[globalIndex] || false;
+                     html += `
+                        <li class="flex items-start ml-1 p-1">
+                            <input type="checkbox" id="check-${globalIndex}" data-index="${globalIndex}" ${isChecked ? 'checked' : ''} onchange="toggleChecklist(${globalIndex})" class="mt-0.5 mr-3 h-5 w-5 text-blue-600 border-slate-300 rounded focus:ring-blue-500 accent-blue-600">
+                            <label for="check-${globalIndex}" class="text-sm font-medium text-slate-700 ${isChecked ? 'line-through text-slate-400 opacity-70' : ''}">
+                                ${item}
+                            </label>
+                        </li>
+                     `;
+                     globalIndex++;
+                });
+            });
+            
+            listContainer.innerHTML = html;
+        }
+
+        function toggleChecklist(index) {
+            checklistStatus[index] = !checklistStatus[index];
+            localStorage.setItem(storageKeys.checklist, JSON.stringify(checklistStatus));
+            renderChecklist();
+        }
+
+        function clearChecklist() {
+            checklistStatus = {};
+            localStorage.removeItem(storageKeys.checklist);
+            renderChecklist();
+            alertModal('行前清單已清空', 'info');
+        }
+
+        function saveMemo() {
+            const memoText = document.getElementById('memo-input').value;
+            localStorage.setItem(storageKeys.memo, memoText);
+            renderMemo(memoText);
+            alertModal('備忘錄已儲存', 'success');
+        }
+
+        function renderMemo(memoText = null) {
+            const outputContainer = document.getElementById('memo-output');
+            const text = memoText === null ? localStorage.getItem(storageKeys.memo) || '' : memoText;
+
+            if (!text.trim()) {
+                outputContainer.innerHTML = '<p class="text-slate-400 italic text-center py-4">無備忘錄內容</p>';
+                document.getElementById('memo-input').value = '';
+                return;
+            }
+
+            const urlRegex = /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
+            let htmlContent = text.replace(urlRegex, function(url) {
+                const displayUrl = url.length > 30 ? url.substring(0, 27) + '...' : url;
+                return `
+                    <a href="${url}" target="_blank" class="inline-block bg-blue-50 text-blue-700 border border-blue-200 text-xs px-2.5 py-1 rounded-lg shadow-sm hover:bg-blue-100 transition mt-1">
+                        <i class="fas fa-link mr-1"></i> ${displayUrl}
+                    </a>
+                `;
+            });
+            
+            outputContainer.innerHTML = htmlContent.replace(/\n/g, '<br>');
+        }
+        
+        function alertModal(message, type = 'info') {
+            let bgColor = 'bg-slate-700';
+            let icon = 'fas fa-info-circle';
+            
+            if (type === 'success') {
+                bgColor = 'bg-blue-700';
+                icon = 'fas fa-check-circle text-cyan-300';
+            } else if (type === 'error') {
+                bgColor = 'bg-red-600';
+                icon = 'fas fa-exclamation-circle text-white';
+            }
+
+            const modalId = `modal-${Date.now()}`;
+            const modalHtml = `
+                <div id="${modalId}" class="absolute top-6 left-1/2 -translate-x-1/2 z-50 transition-all duration-400 opacity-0 transform -translate-y-full w-11/12 max-w-sm">
+                    <div class="flex items-center ${bgColor} text-white text-sm font-bold px-4 py-3.5 rounded-2xl shadow-xl border border-white/10" role="alert">
+                        <i class="${icon} text-lg mr-3"></i>
+                        <p>${message}</p>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('app-wrapper').insertAdjacentHTML('beforeend', modalHtml);
+            const modalElement = document.getElementById(modalId);
+            
+            setTimeout(() => {
+                modalElement.classList.remove('opacity-0', '-translate-y-full');
+                modalElement.classList.add('opacity-100', 'translate-y-0');
+            }, 10);
+
+            setTimeout(() => {
+                modalElement.classList.remove('opacity-100', 'translate-y-0');
+                modalElement.classList.add('opacity-0', '-translate-y-full');
+                setTimeout(() => modalElement.remove(), 400);
+            }, 2500);
+        }
+
+        window.onload = function() {
+            initWallet(); 
+            initLists(); 
+            renderGuide(); 
+            showTab('plan'); 
+        };
+    </script>
+</body>
+</html>
