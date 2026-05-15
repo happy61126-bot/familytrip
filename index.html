@@ -77,7 +77,7 @@
             opacity: 0;
         }
         .collapsible-content.expanded {
-            max-height: 3500px;
+            max-height: 8000px;
             opacity: 1;
         }
 
@@ -142,43 +142,59 @@
                     <i class="fas fa-yen-sign text-cyan-600 mr-2"></i> 記帳與匯率
                 </h2>
                 
-                <!-- 匯率計算機 -->
-                <div class="bg-white p-4 rounded-xl shadow-lg border-2 border-cyan-300">
-                    <h3 class="header-title text-xl font-semibold mb-3 text-blue-800">匯率換算器 (RMB to TWD)</h3>
-                    <div class="flex space-x-2 mb-3">
-                        <input type="number" id="exchange-rate" value="4.65" step="0.01" class="w-1/3 p-2 border rounded-lg text-center" placeholder="匯率">
-                        <button onclick="saveExchangeRate()" class="w-2/3 bg-cyan-600 text-white p-2 rounded-lg font-bold hover:bg-cyan-700 transition">
-                            儲存匯率 (<span id="current-rate">4.65</span>)
-                        </button>
-                    </div>
-
-                    <div class="p-3 bg-gray-100 rounded-lg shadow-inner">
-                        <input type="text" id="calc-input" class="w-full text-2xl p-2 mb-2 text-right bg-transparent border-b-2 border-gray-300 font-mono" placeholder="輸入算式或金額...">
-                        <div id="calc-result" class="text-right text-lg font-bold text-blue-800">總額 (RMB): 0.00</div>
-                        <div id="twd-result" class="text-right text-sm font-semibold text-gray-600">換算 (TWD): 0.00</div>
-                    </div>
-
-                    <div class="grid grid-cols-4 gap-2 mt-3">
-                        <button class="calc-btn bg-slate-200 p-3 rounded-xl shadow-sm text-lg font-semibold" onclick="handleCalcInput('7')">7</button>
-                        <button class="calc-btn bg-slate-200 p-3 rounded-xl shadow-sm text-lg font-semibold" onclick="handleCalcInput('8')">8</button>
-                        <button class="calc-btn bg-slate-200 p-3 rounded-xl shadow-sm text-lg font-semibold" onclick="handleCalcInput('9')">9</button>
-                        <button class="calc-btn bg-blue-100 p-3 rounded-xl shadow-sm text-lg font-semibold text-blue-700" onclick="handleCalcInput('/')">÷</button>
-
-                        <button class="calc-btn bg-slate-200 p-3 rounded-xl shadow-sm text-lg font-semibold" onclick="handleCalcInput('4')">4</button>
-                        <button class="calc-btn bg-slate-200 p-3 rounded-xl shadow-sm text-lg font-semibold" onclick="handleCalcInput('5')">5</button>
-                        <button class="calc-btn bg-slate-200 p-3 rounded-xl shadow-sm text-lg font-semibold" onclick="handleCalcInput('6')">6</button>
-                        <button class="calc-btn bg-blue-100 p-3 rounded-xl shadow-sm text-lg font-semibold text-blue-700" onclick="handleCalcInput('*')">×</button>
-
-                        <button class="calc-btn bg-slate-200 p-3 rounded-xl shadow-sm text-lg font-semibold" onclick="handleCalcInput('1')">1</button>
-                        <button class="calc-btn bg-slate-200 p-3 rounded-xl shadow-sm text-lg font-semibold" onclick="handleCalcInput('2')">2</button>
-                        <button class="calc-btn bg-slate-200 p-3 rounded-xl shadow-sm text-lg font-semibold" onclick="handleCalcInput('3')">3</button>
-                        <button class="calc-btn bg-blue-100 p-3 rounded-xl shadow-sm text-lg font-semibold text-blue-700" onclick="handleCalcInput('-')">-</button>
-
-                        <button class="calc-btn bg-gray-300 p-3 rounded-xl shadow-sm text-lg font-semibold" onclick="handleCalcInput('C')">C</button>
-                        <button class="calc-btn bg-slate-200 p-3 rounded-xl shadow-sm text-lg font-semibold" onclick="handleCalcInput('0')">0</button>
-                        <button class="calc-btn bg-slate-200 p-3 rounded-xl shadow-sm text-lg font-semibold" onclick="handleCalcInput('.')">.</button>
-                        <button class="calc-btn col-span-1 bg-blue-600 text-white p-3 rounded-xl shadow-lg text-lg font-bold" onclick="calculateResult()">=</button>
-                    </div>
+                <!-- 預估景點門票價格 -->
+                <div class="bg-white p-4 rounded-xl shadow-lg border-2 border-slate-300">
+                    <h3 class="header-title text-xl font-semibold mb-2 text-slate-700">預估景點門票價格</h3>
+                    <p class="text-[11px] text-cyan-700 mb-3 font-medium">此區僅為預估清單，不計入下方記帳歷史與總花費中。</p>
+                    <ul class="space-y-3 text-sm text-gray-700">
+                        <li class="flex justify-between items-start border-b border-gray-100 pb-2">
+                            <div><span class="font-bold text-slate-800 block">故宮</span> <span class="text-xs text-gray-500">成人60/人、60歲以上30/人、學生20/人</span><span class="block text-[11px] text-gray-400 mt-0.5">報名講解時會含門票價格(5月中關注報名)</span></div>
+                            <span class="font-bold text-blue-800 whitespace-nowrap ml-2 mt-1">¥ 310</span>
+                        </li>
+                        <li class="flex justify-between items-start border-b border-gray-100 pb-2">
+                            <div><span class="font-bold text-slate-800 block">天壇</span> <span class="text-xs text-gray-500">成人34/人、60歲以上免費、18歲以下免費</span><span class="block text-[11px] text-gray-400 mt-0.5">6/22 0:00 開放購票</span></div>
+                            <span class="font-bold text-blue-800 whitespace-nowrap ml-2 mt-1">¥ 136</span>
+                        </li>
+                        <li class="flex justify-between items-start border-b border-gray-100 pb-2">
+                            <div><span class="font-bold text-slate-800 block">先農壇</span> <span class="text-xs text-gray-500">成人15/人、60歲以上免費、18歲以下免費</span><span class="block text-[11px] text-gray-400 mt-0.5">現場購票即可</span></div>
+                            <span class="font-bold text-blue-800 whitespace-nowrap ml-2 mt-1">¥ 60</span>
+                        </li>
+                        <li class="flex justify-between items-start border-b border-gray-100 pb-2">
+                            <div><span class="font-bold text-slate-800 block">華嚴寺</span> <span class="text-xs text-gray-500">成人50/人、60歲以上免費、學生25/人</span><span class="block text-[11px] text-gray-400 mt-0.5">6/15 0:00 開放購票</span></div>
+                            <span class="font-bold text-blue-800 whitespace-nowrap ml-2 mt-1">¥ 250</span>
+                        </li>
+                        <li class="flex justify-between items-start border-b border-gray-100 pb-2">
+                            <div><span class="font-bold text-slate-800 block">善化寺</span> <span class="text-xs text-gray-500">成人40/人、60歲以上免費、學生20/人</span><span class="block text-[11px] text-gray-400 mt-0.5">6/24 0:00 開放購票</span></div>
+                            <span class="font-bold text-blue-800 whitespace-nowrap ml-2 mt-1">¥ 200</span>
+                        </li>
+                        <li class="flex justify-between items-start border-b border-gray-100 pb-2">
+                            <div><span class="font-bold text-slate-800 block">雲岡石窟</span> <span class="text-xs text-gray-500">成人120/人、60歲以上免費、學生60/人</span><span class="block text-[11px] text-gray-400 mt-0.5">6/15 7:00 開放購票</span></div>
+                            <span class="font-bold text-blue-800 whitespace-nowrap ml-2 mt-1">¥ 600</span>
+                        </li>
+                        <li class="flex justify-between items-start border-b border-gray-100 pb-2">
+                            <div><span class="font-bold text-slate-800 block">如夢大同表演</span> <span class="text-xs text-gray-500">成人238/人、65歲以上150/人、學生150/人</span><span class="block text-[11px] text-gray-400 mt-0.5">現場購票即可(兒童票只能現場買)</span></div>
+                            <span class="font-bold text-blue-800 whitespace-nowrap ml-2 mt-1">¥ 1402</span>
+                        </li>
+                        <li class="flex justify-between items-start border-b border-gray-100 pb-2">
+                            <div><span class="font-bold text-slate-800 block">應縣木塔</span> <span class="text-xs text-gray-500">成人50/人、60歲以上免費、學生25/人</span><span class="block text-[11px] text-gray-400 mt-0.5">隨時可約(目前未約)</span></div>
+                            <span class="font-bold text-blue-800 whitespace-nowrap ml-2 mt-1">¥ 250</span>
+                        </li>
+                        <li class="flex justify-between items-start border-b border-gray-100 pb-2">
+                            <div><span class="font-bold text-slate-800 block">懸空寺</span> <span class="text-xs text-gray-500">成人15/人、60歲以上免費、學生8/人</span><span class="block text-[11px] text-gray-400 mt-0.5">6/25 0:00 開放購票</span></div>
+                            <span class="font-bold text-blue-800 whitespace-nowrap ml-2 mt-1">¥ 76</span>
+                        </li>
+                        <li class="flex justify-between items-start border-b border-blue-200 pb-2">
+                            <div><span class="font-bold text-slate-800 block">五台山</span> <span class="text-xs text-gray-500">成人135/人、60歲以上免費、學生70/人</span><span class="block text-[11px] text-gray-400 mt-0.5">成人6/27 0:00 開放購票 學生只能線下買</span></div>
+                            <span class="font-bold text-blue-800 whitespace-nowrap ml-2 mt-1">¥ 680</span>
+                        </li>
+                        <li class="flex justify-between items-center pt-2 bg-slate-50 px-2 py-3 rounded-lg border border-blue-100 mt-2">
+                            <span class="font-bold text-blue-900"><i class="fas fa-calculator mr-2"></i>預估門票總計</span>
+                            <div class="text-right">
+                                <span class="block font-extrabold text-blue-800 text-base">¥ 3,964</span>
+                                <span class="block text-[11px] text-cyan-700 font-bold">約 NT$ 18,433</span>
+                            </div>
+                        </li>
+                    </ul>
                 </div>
 
                 <!-- 記帳輸入區 -->
@@ -329,13 +345,15 @@
                             <h4 class="font-bold text-cyan-700 text-sm mb-1">搭乘高鐵注意事項</h4>
                             <ul class="list-disc pl-5 text-sm space-y-1 text-gray-700">
                                 <li>中國高鐵安檢嚴格，防曬噴霧、指甲油等易燃物品容量有限制，建議帶塗抹式防曬。</li>
-                                <li>進站、乘車皆需刷台胞證（走人工或證件通道），請統一妥善保管。</li>
+                                <li>不能攜帶:易燃易爆品(濃度大於70%的酒精)、管制器具(刀刃超過6CM的刀具)</li>
+                                <li>行動電源容量在100Wh(約27000mAh)以下，且須有CCC認證標籤</li>
+                                <li>噴霧、髮膠、殺蟲劑等噴霧瓶容量不能超過150ML、非壓力噴瓶單瓶不超過100ML</li>
+                                <li>進站、乘車皆需刷台胞證（走人工或證件通道），請統一妥善保管</li>
                             </ul>
                         </div>
                         <div class="border-l-4 border-cyan-500 pl-3">
                             <h4 class="font-bold text-cyan-700 text-sm mb-1">山西古建與佛教名山 (大同、五台山)</h4>
                             <ul class="list-disc pl-5 text-sm space-y-1 text-gray-700">
-                                <li>懸空寺通道狹窄且陡峭，請注意腳下安全，患有懼高症者請斟酌。</li>
                                 <li>五台山為佛教聖地，參觀寺廟請遵守規定：不踩門檻、不大聲喧嘩、穿著端莊（勿穿無袖、短褲短裙）。</li>
                                 <li>山西氣候乾燥，早晚溫差大，請備好保濕用品與薄外套。</li>
                             </ul>
@@ -366,6 +384,7 @@
                             <h4 class="font-bold text-blue-700 text-sm mb-1"><i class="fas fa-user-shield mr-1"></i> 3. 防走散</h4>
                             <ul class="list-disc pl-5 text-sm space-y-1 text-gray-700">
                                 <li>故宮、前門大街、高鐵站人潮擁擠，約定好走散時的集合地點或聯絡方式（確保手機有網路）。</li>
+                                <li>只要在戶外小孩都牽緊，不要離開大人視線。</li>
                             </ul>
                         </div>
                     </div>
@@ -529,7 +548,7 @@
                 ]
             },
             {
-                day: 6, date: '2026/07/01', city: '大同 → 五台山', accommodation: '五台山萬豪酒店', events: [
+                day: 6, date: '2026/07/01', city: '大同 → 五台山', accommodation: '五台山青峰觀嵐酒店', events: [
                     { time: '06:30', title: '起床盥洗', highlight: false, details: [] },
                     { time: '07:00', title: '吃早餐', highlight: false, details: ['美團外賣-龍聚祥燒賣(鼓樓店)', '前一晚先點餐'] },
                     { time: '08:00', title: '退房 & 出發前往應縣木塔', highlight: true, details: ['包車9人座 全日 (已預約)'], transport: { icon: 'fa-van-shuttle', label: '包車' } },
@@ -537,11 +556,11 @@
                     { time: '11:00', title: '出發渾源吃午餐', highlight: false, details: [], transport: { icon: 'fa-van-shuttle', label: '包車' } },
                     { time: '12:00', title: '吃午餐-蔡家酒樓', highlight: false, details: ['如果人太多就改吃北越恒山村'] },
                     { time: '13:30', title: '遊覽懸空寺', highlight: true, details: ['僅在下面看不登臨'], transport: { icon: 'fa-van-shuttle', label: '包車' } },
-                    { time: '14:30', title: '出發前往五台山-梵境里小鎮', highlight: true, details: [], transport: { icon: 'fa-van-shuttle', label: '包車' } },
-                    { time: '18:00', title: '抵達酒店 CHECK IN', highlight: false, details: ['住宿：五台山萬豪酒店'] },
-                    { time: '18:30', title: '吃晚餐：境遇 ‧ 一品香素齋', highlight: true, details: ['如果人很多就在梵境里小鎮裡面逛吃'], transport: { icon: 'fa-walking', label: '步行' } },
-                    { time: '20:00', title: '梵境里小鎮夜遊', highlight: false, details: ['五台傳奇實境秀、千架無人機表演、水幕燈光秀、沉浸式街演'] },
-                    { time: '22:00', title: '返回飯店', highlight: false, details: ['住宿：五台山萬豪酒店'] }
+                    { time: '14:30', title: '出發前往五台山-楊柏峪村', highlight: true, details: [], transport: { icon: 'fa-van-shuttle', label: '包車' } },
+                    { time: '18:00', title: '抵達酒店 CHECK IN', highlight: false, details: ['住宿：五台山青峰觀嵐酒店'] },
+                    { time: '18:30', title: '吃晚餐：清涼‧ 一品香素齋', highlight: true, details: ['如果人很多就去吃 天天向上素食餐廳'], transport: { icon: 'fa-walking', label: '步行' } },
+                    { time: '20:00', title: '楊柏峪村 夜遊', highlight: false, details: ['可以逛一逛文創店(清嵐書社)', '媽媽如果累了可以先回飯店休息'] },
+                    { time: '22:00', title: '返回飯店', highlight: false, details: ['住宿：五台山青峰觀嵐酒店'] }
                 ]
             },
             {
@@ -561,16 +580,16 @@
                 ]
             },
             {
-                day: 8, date: '2026/07/03', city: '忻州 → 北京', accommodation: '北京飯店 (待定)', events: [
+                day: 8, date: '2026/07/03', city: '忻州 → 北京', accommodation: '香柏藝術酒店(北京南鑼鼓巷后海店)', events: [
                     { time: '07:30', title: '起床盥洗', highlight: false, details: [] },
                     { time: '08:00', title: '前往吃早餐-光明早餐店', highlight: false, details: ['現場吃'], transport: { icon: 'fa-walking', label: '步行' } },
                     { time: '09:00', title: '退房寄存行李&忻州古城晨游', highlight: false, details: ['漫步忻州古城', '中午在古城裡簡單吃', '推薦必吃:烤豬蹄、麻葉、酸奶、豆腐丸子、保德油糕、新疆羊肉串、鮮榨沙棘汁、鹵豬蹄'] },
                     { time: '13:50', title: '前往高鐵忻州西站', highlight: true, details: [], transport: { icon: 'fa-car', label: '民宿接送' } },
                     { time: '14:20', title: '抵達高鐵忻州西站', highlight: false, details: [] },
                     { time: '14:49', title: '搭乘高鐵前往北京北站', highlight: true, details: [], transport: { icon: 'fa-train', label: '高鐵' } },
-                    { time: '18:12', title: '抵達北京前往飯店', highlight: true, details: ['高鐵接駁包車(未預定)', '飯店待定'], transport: { icon: 'fa-van-shuttle', label: '包車' } },
-                    { time: '19:30', title: '晚餐:璟雅軒 一鴨九吃', highlight: true, details: ['如果人很多就在南鑼鼓巷逛吃'] },
-                    { time: '21:30', title: '返回飯店', highlight: false, details: ['飯店待定'], transport: { icon: 'fa-walking', label: '步行' } }
+                    { time: '18:12', title: '抵達北京前往 香柏藝術酒店(北京南鑼鼓巷后海店)', highlight: true, details: ['高鐵接駁包車(未預定)'], transport: { icon: 'fa-van-shuttle', label: '包車' } },
+                    { time: '19:30', title: '晚餐:璟雅軒 一鴨九吃', highlight: true, details: ['備案:菊兒人家', '如果人都很多就在南鑼鼓巷逛吃', '南鑼鼓巷推薦必吃:文宇奶酪、鬼味烤翅、稻香村(伴手禮)、吉士果、紫光園(酸奶)、尹三豆汁兒冰淇淋', '夜遊逛街可去:菊兒胡同(新式四合院)、帽兒胡同(婉容故居)、雨兒胡同(齊白石故居)、鼓樓、什煞海、煙袋斜巷商業街'] },
+                    { time: '22:00', title: '返回飯店', highlight: false, details: ['住宿 : 香柏藝術酒店(北京南鑼鼓巷后海店)'], transport: { icon: 'fa-walking', label: '步行' } }
                 ]
             },
             {
@@ -592,33 +611,36 @@
             {
                 category: '證件與財物',
                 items: [
-                    '台胞證/護照(務必隨身攜帶，高鐵/景區皆需實名制)',
-                    '信用卡、下載微信支付/支付寶與適量現金'
+                    '台胞證/護照 <span class="block text-xs text-gray-500 font-normal mt-0.5">務必隨身攜帶，高鐵/景區皆需實名制</span>',
+                    '信用卡',
+                    '下載微信支付/支付寶/滴滴打車 <span class="block text-xs text-gray-500 font-normal mt-0.5">用台胞證實名認證+綁定信用卡</span>',
+                    '適量人民幣 <span class="block text-xs text-gray-500 font-normal mt-0.5">一般來說用不到</span>'
                 ]
             },
             {
                 category: '衣物類(夏季透氣、防曬為主)',
                 items: [
-                    '至少9套衣物(9天8夜的穿著)',
-                    '透氣舒適衣褲(每人至少幾套備用)',
-                    '長袖薄外套/防曬外套(山西早晚溫差大、防曬)',
-                    '入寺廟端莊服飾(五台山不可穿無袖、短褲裙)',
-                    '內衣褲、襪子',
-                    '輕便雨具'
+                    '至少9套衣物 <span class="block text-xs text-gray-500 font-normal mt-0.5">飯店都有免費洗衣房，也可以少帶幾套到那邊洗</span>',
+                    '睡衣',
+                    '長袖薄外套/防曬外套 <span class="block text-xs text-gray-500 font-normal mt-0.5">山西早晚溫差大、防曬</span>',
+                    '入寺廟端莊服飾 <span class="block text-xs text-gray-500 font-normal mt-0.5">五台山不可穿無袖、短褲裙</span>',
+                    '內衣褲*9、襪子*9',
+                    '輕便雨具 <span class="block text-xs text-gray-500 font-normal mt-0.5">能抗紫外線佳，北京夏天熱</span>',
+                    '登山杖 <span class="block text-xs text-gray-500 font-normal mt-0.5">幫媽媽買</span>'
                 ]
             },
             {
                 category: '鞋類',
                 items: [
-                    '極舒適好走的運動鞋(故宮、天壇、古城步行極多)',
-                    '輕便拖鞋/涼鞋(晚上在酒店穿)'
+                    '極舒適好走的運動鞋 <span class="block text-xs text-gray-500 font-normal mt-0.5">故宮、天壇、古城步行多</span>',
+                    '輕便拖鞋/涼鞋 <span class="block text-xs text-gray-500 font-normal mt-0.5">在酒店穿(有些酒店也有一次性拖鞋)</span>'
                 ]
             },
             {
                 category: '防護保濕類(北方氣候乾燥)',
                 items: [
-                    '高倍數防曬（塗抹式，噴霧可能過不了高鐵安檢）',
-                    '太陽帽/遮陽傘、墨鏡',
+                    '高倍數防曬 <span class="block text-xs text-gray-500 font-normal mt-0.5">塗抹式，噴霧可能過不了高鐵安檢</span>',
+                    '太陽帽、遮陽傘、墨鏡',
                     '保濕乳液、護唇膏、面膜',
                     '消毒濕紙巾、面紙'
                 ]
@@ -626,16 +648,16 @@
             {
                 category: '藥品類',
                 items: [
-                    '腸胃藥、感冒藥、退燒藥',
-                    '休足時間、痠痛貼布(重要！步行極多)',
-                    '暈車藥(部分山路備用)',
+                    '腸胃藥、感冒藥、退燒藥、過敏藥',
+                    '休足時間、痠痛貼布',
+                    '暈車藥 <span class="block text-xs text-gray-500 font-normal mt-0.5">部分山路備用</span>',
                     'OK繃、常備個人藥物'
                 ]
             },
             {
                 category: '電子設備類',
                 items: [
-                    '手機、相機、大容量行動電源及充電器',
+                    '手機、相機、行動電源及充電器 <span class="block text-xs text-gray-500 font-normal mt-0.5">行動電源需容量在100Wh以下，必須隨身手提，嚴禁託運；需有3C認證標籤</span>',
                     '三腳架或手機穩定器'
                 ]
             },
@@ -643,14 +665,57 @@
                 category: '其他雜項',
                 items: [
                     '輕便雙肩包或隨身防盜小包',
-                    '保溫杯(隨時補充水分)',
+                    '保溫水壺',
                     '牙刷、牙膏、個人洗漱用品'
                 ]
             }
         ];
 
         // --- 更新 GUIDE 模組資料結構 ---
-        const guideArticles = [
+        const hotelGuides = [
+            {
+                title: '漢庭酒店(北京前門店)',
+                subtitle: 'DAY1 - DAY3 住宿',
+                content: '【介紹】\n漢庭酒店(北京前門店)是華住酒店集團旗下的漢庭4.0新品酒店,酒店位於北京老字號鮮魚口美食文化街與前門東路交叉口西側緊鄰老北京鮮魚口美食文化街/大柵欄/前門商業街，步行即可抵達。\n\n【本次入住房型】\n家庭房 (2張1.5米雙人床)\n親子房 (1張1.5米雙人床、1張1.2米單人床)\n可免費加被子，入住時和前台說即可\n\n【酒店設施(皆免費)】\n機器人服務、洗衣房、乾衣機、熨燙機、飲水機(1樓)\n\n【客房設施】\n●需向前台免費索取 : 牙刷、牙膏、梳子、刮鬍刀\n●房內具備 : 瓶裝水、熱水壺、沐浴乳、洗髮乳、浴帽、吹風機、毛巾、拖鞋',
+                icon: 'fa-bed',
+                route: '',
+                mapUrl: ''
+            },
+            {
+                title: '益海府邸民宿(大同華嚴寺店)',
+                subtitle: 'DAY4 - DAY5 住宿',
+                content: '【介紹】\n居古城芯，攬大同風華擇一處居所，讀懂一座城。益海府邸民宿，在大同古城的心臟地帶，推窗即見華嚴寺的莊嚴禪韻，轉身便觸西城牆的千年肌理。無需車馬勞頓，步行數分鐘，古城內的每一處景緻皆可抵達。 民宿以"古色古香的空中四合院"為骨，將傳統建築美學與現代旅居需求巧妙融合。這裡不止是休憩之所，更是您與大同對話的窗口。\n\n【本次入住房型】\n望月軒複式觀景房 (2張1.8米大床、1張榻榻米、兒童帳篷)\n清風軒 (1張1.8米大床)\n以上房型皆為全屋智能+迷你冰箱+乾溼三區分離+歡迎水果\n可免費加被子，入住時和前台說即可\n\n【酒店設施(皆免費)】\n洗衣房、乾衣機、熨燙機\n沒有飲水機(只能跟用熱水壺煮)\n\n【客房設施】\n●需向前台免費索取 : 兒童洗漱用品\n●房內具備 :牙刷、牙膏、梳子、刮鬍刀、瓶裝水(不夠可以向前台取)、熱水壺、沐浴乳、洗髮乳、浴帽、吹風機、毛巾、拖鞋、免費迷你吧',
+                icon: 'fa-bed',
+                route: '',
+                mapUrl: ''
+            },
+            {
+                title: '五台山青峰觀嵐酒店',
+                subtitle: 'DAY6 住宿',
+                content: '介紹內容後補',
+                icon: 'fa-bed',
+                route: '',
+                mapUrl: ''
+            },
+            {
+                title: '南宸‧汐上民宿',
+                subtitle: 'DAY7 住宿',
+                content: '介紹內容後補',
+                icon: 'fa-bed',
+                route: '',
+                mapUrl: ''
+            },
+            {
+                title: '香柏藝術酒店(北京南鑼鼓巷後海店)',
+                subtitle: 'DAY8 住宿',
+                content: '【介紹】\n香柏藝術酒店，位於繁華南鑼鼓巷菊兒胡同33號，是一片閒逸的寧靜之地。在這裡與知己品茗談笑，或獨自閱讀，盡享愜意時光。我們不僅精心營造優雅環境，更提供細緻服務。經過嚴格選拔與培訓的服務團隊，以專業素養和人文關懷，為您帶來溫馨舒適，同時引領您體驗閒適生活與文化熏陶，激發內心的力量與智慧。\n\n【本次入住房型】\n2間 福祥家庭房 (2張1.5米雙人床)\n以上房型為獨立客廳+乾溼分離+雙投屏電視\n每房贈1份迷你吧+1份歡迎飲品\n可免費加被子，入住時和前台說即可\n\n【酒店設施(皆免費)】\n洗衣房、乾衣機、熨燙機、機器人服務、健身房、熱水可以到前台接(沒有飲水機)\n\n【客房設施】\n●需向前台免費索取 : 牙刷、牙膏、梳子、刮鬍刀、浴帽、兒童洗漱用品\n●房內具備 : 瓶裝水、熱水壺、沐浴乳、洗髮乳、吹風機、毛巾、拖鞋',
+                icon: 'fa-bed',
+                route: '',
+                mapUrl: ''
+            }
+        ];
+
+        const attractionGuides = [
             {
                 title: '北京故宮',
                 subtitle: '明清兩代皇家宮殿',
@@ -704,14 +769,6 @@
                 subtitle: '世界現存最古老最高大的木塔',
                 content: '應縣木塔，全稱佛宮寺釋迦塔，位於山西省朔州市應縣。始建於遼清寧二年（公元1056年），是世界上現存最高大、最古老的純木結構樓閣式建築。塔高67.31米，底層直徑30.27米，重達7,400多噸，全塔上下沒用一顆鐵釘，全靠木構件互相卯榫咬合而成。其塔身內外共使用了54種不同形制的斗拱，規模宏大、種類繁多，被譽為“中國古建築斗拱博物館”。1961年，應縣木塔被列為第一批全國重點文物保護單位，並於2016年被認證為“世界上最高的木塔”。',
                 icon: 'fa-monument',
-                route: '',
-                mapUrl: ''
-            },
-            {
-                title: '懸空寺',
-                subtitle: '建在峭壁上的奇險建築',
-                content: '懸空寺，原稱“玄空閣”，位於山西省大同市渾源縣恆山金龍峽翠屏峰峭壁間。它始建於北魏太和十五年（公元491年），距今已逾1500年，是國內現存唯一佛、道、儒“三教合一”的古寺。整座寺院上載危崖，下臨深谷，樓閣懸空，以“奇、懸、巧”的建築特色聞名於世。寺內擁有殿閣四十餘間，李白曾贊其“壯觀”，徐霞客更驚嘆為“天下巨觀”。1982年，懸空寺被列為全國重點文物保護單位。',
-                icon: 'fa-mountain',
                 route: '',
                 mapUrl: ''
             },
@@ -770,40 +827,66 @@
         // --- 2. GUIDE (深度導覽) 模組 ---
         function renderGuide() {
             const articleContainer = document.getElementById('guide-articles');
-            articleContainer.innerHTML = guideArticles.map((article, index) => {
-                const routeHtml = article.route ? `
-                    <button class="w-full mt-4 text-left p-3 bg-blue-50 text-blue-800 font-bold rounded-xl transition hover:bg-blue-100 flex justify-between items-center" 
-                            onclick="toggleCollapsible('route-content-${index}', this)">
-                        <span><i class="fas fa-map-signs mr-2 text-cyan-600"></i> 建議遊玩路線</span>
-                        <i class="fas fa-chevron-down transition-transform duration-300 transform"></i>
-                    </button>
-                    
-                    <div id="route-content-${index}" class="collapsible-content">
-                        <div class="p-4 bg-slate-50 border border-t-0 border-slate-100 rounded-b-xl mt-1">
-                            <p class="text-xs font-semibold text-gray-800 mb-3">路線：</p>
-                            <p class="text-sm text-blue-700 font-medium whitespace-pre-wrap mb-4">${article.route}</p>
-                            
-                            ${article.mapUrl ? `
-                                <div class="mt-3 text-center">
-                                    <a href="${article.mapUrl}" target="_blank" class="inline-block w-full bg-cyan-600 text-white px-4 py-3 rounded-xl font-bold shadow hover:bg-cyan-700 transition active:bg-cyan-800">
-                                        <i class="fas fa-map mr-2"></i> 查看完整路線圖
-                                    </a>
-                                </div>
-                            ` : ''}
+            
+            const renderCategory = (categoryTitle, categoryIcon, categoryId, items, itemPrefix) => {
+                const itemsHtml = items.map((article, index) => {
+                    const routeHtml = article.route ? `
+                        <button class="w-full mt-4 text-left p-3 bg-blue-50 text-blue-800 font-bold rounded-xl transition hover:bg-blue-100 flex justify-between items-center" 
+                                onclick="toggleCollapsible('route-content-${itemPrefix}-${index}', this)">
+                            <span><i class="fas fa-map-signs mr-2 text-cyan-600"></i> 建議遊玩路線</span>
+                            <i class="fas fa-chevron-down transition-transform duration-300 transform"></i>
+                        </button>
+                        
+                        <div id="route-content-${itemPrefix}-${index}" class="collapsible-content">
+                            <div class="p-4 bg-slate-50 border border-t-0 border-slate-100 rounded-b-xl mt-1">
+                                <p class="text-xs font-semibold text-gray-800 mb-3">路線：</p>
+                                <p class="text-sm text-blue-700 font-medium whitespace-pre-wrap mb-4">${article.route}</p>
+                                
+                                ${article.mapUrl ? `
+                                    <div class="mt-3 text-center">
+                                        <a href="${article.mapUrl}" target="_blank" class="inline-block w-full bg-cyan-600 text-white px-4 py-3 rounded-xl font-bold shadow hover:bg-cyan-700 transition active:bg-cyan-800">
+                                            <i class="fas fa-map mr-2"></i> 查看完整路線圖
+                                        </a>
+                                    </div>
+                                ` : ''}
+                            </div>
                         </div>
+                    ` : '';
+
+                    return `
+                    <div class="bg-white p-4 rounded-xl shadow-md border border-slate-200">
+                        <h3 class="header-title text-xl font-bold text-blue-900 mb-1">
+                            <i class="fas ${article.icon} text-cyan-600 mr-2"></i> ${article.title}
+                        </h3>
+                        <p class="text-sm font-light text-gray-500 mb-3 border-b border-slate-100 pb-2">${article.subtitle}</p>
+                        <p class="text-sm text-gray-700 whitespace-pre-wrap leading-relaxed">${article.content}</p>
+                        ${routeHtml}
                     </div>
-                ` : '';
+                `}).join('');
 
                 return `
-                <div class="bg-white p-4 rounded-xl shadow-md border border-slate-200">
-                    <h3 class="header-title text-xl font-bold text-blue-900 mb-1">
-                        <i class="fas ${article.icon} text-cyan-600 mr-2"></i> ${article.title}
-                    </h3>
-                    <p class="text-sm font-light text-gray-500 mb-3 border-b border-slate-100 pb-2">${article.subtitle}</p>
-                    <p class="text-sm text-gray-700 whitespace-pre-wrap leading-relaxed">${article.content}</p>
-                    ${routeHtml}
-                </div>
-            `}).join('');
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-300 mb-6 overflow-hidden">
+                        <button class="w-full flex justify-between items-center p-4 bg-gradient-to-r from-blue-50 to-white hover:bg-blue-100 transition text-left" onclick="toggleCollapsible('${categoryId}', this)">
+                            <div class="flex items-center">
+                                <i class="fas ${categoryIcon} text-2xl text-cyan-700 mr-3 w-8 text-center"></i>
+                                <h3 class="header-title text-xl font-bold text-slate-800">${categoryTitle}</h3>
+                            </div>
+                            <div class="w-8 h-8 rounded-full bg-white flex items-center justify-center border border-slate-200 shadow-sm">
+                                <i class="fas fa-chevron-down text-slate-500 transition-transform duration-300"></i>
+                            </div>
+                        </button>
+                        <div id="${categoryId}" class="collapsible-content">
+                            <div class="p-4 bg-slate-50/50 border-t border-slate-200 space-y-6">
+                                ${itemsHtml}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            };
+
+            articleContainer.innerHTML = 
+                renderCategory('酒店介紹', 'fa-hotel', 'category-hotel', hotelGuides, 'hotel') +
+                renderCategory('景點介紹', 'fa-map-marked-alt', 'category-attraction', attractionGuides, 'attr');
         }
 
         function toggleCollapsible(id, button) {
@@ -962,13 +1045,7 @@
 
         // --- 3. WALLET (記帳與匯率) 模組 ---
         function initWallet() {
-            try {
-                const storedRate = localStorage.getItem(storageKeys.rate);
-                exchangeRate = storedRate ? parseFloat(storedRate) : 4.65;
-            } catch (e) {
-                exchangeRate = 4.65;
-            }
-
+            exchangeRate = 4.65; // 固定匯率
             try {
                 const storedExpenses = localStorage.getItem(storageKeys.expenses);
                 if (storedExpenses) {
@@ -992,8 +1069,12 @@
                         return e;
                     });
                 } else {
-                    // 初始化新增的三筆記帳資料
+                    // 初始化新增的記帳資料
                     expenses = [
+                        { id: Date.now() + 7, item: 'DAY1-4漢庭酒店', amount: 4410.48, currency: 'RMB', payer: '毓芸', timestamp: new Date().toLocaleString('zh-TW'), photoBase64: null },
+                        { id: Date.now() + 6, item: 'DAY4-6益海府邸民宿', amount: 1920, currency: 'RMB', payer: '毓芸', timestamp: new Date().toLocaleString('zh-TW'), photoBase64: null },
+                        { id: Date.now() + 5, item: 'DAY8-9香柏藝術酒店', amount: 2424, currency: 'RMB', payer: '毓芸', timestamp: new Date().toLocaleString('zh-TW'), photoBase64: null },
+                        { id: Date.now() + 4, item: '天壇講解', amount: 1010, currency: 'RMB', payer: '毓芸', timestamp: new Date().toLocaleString('zh-TW'), photoBase64: null },
                         { id: Date.now() + 3, item: '山西包車3天', amount: 3900, currency: 'RMB', payer: '毓芸', timestamp: new Date().toLocaleString('zh-TW'), photoBase64: null },
                         { id: Date.now() + 2, item: '山西高鐵接送(3台5人座)', amount: 125, currency: 'RMB', payer: '毓芸', timestamp: new Date().toLocaleString('zh-TW'), photoBase64: null },
                         { id: Date.now() + 1, item: '來回機票', amount: 79819, currency: 'TWD', payer: '毓芸', timestamp: new Date().toLocaleString('zh-TW'), photoBase64: null }
@@ -1005,85 +1086,7 @@
                 expenses = [];
             }
             
-            document.getElementById('exchange-rate').value = exchangeRate.toFixed(2);
-            document.getElementById('current-rate').textContent = exchangeRate.toFixed(2);
             renderExpenses();
-        }
-
-        function saveExchangeRate() {
-            const newRate = parseFloat(document.getElementById('exchange-rate').value);
-            if (isNaN(newRate) || newRate <= 0) {
-                alertModal('請輸入有效的匯率！', 'error');
-                return;
-            }
-            exchangeRate = newRate;
-            localStorage.setItem(storageKeys.rate, exchangeRate.toString());
-            document.getElementById('current-rate').textContent = exchangeRate.toFixed(2);
-            calculateResult();
-            renderExpenses();
-            alertModal(`匯率已更新為 ${exchangeRate.toFixed(2)}`, 'success');
-        }
-
-        function handleCalcInput(value) {
-            const input = document.getElementById('calc-input');
-            const currentValue = input.value;
-
-            if (value === 'C') {
-                input.value = '';
-                document.getElementById('calc-result').textContent = '總額 (RMB): 0.00';
-                document.getElementById('twd-result').textContent = '換算 (TWD): 0.00';
-                return;
-            }
-            
-            if ('+-*/'.includes(value)) {
-                const lastChar = currentValue.slice(-1);
-                if ('+-*/'.includes(lastChar) || currentValue === '') {
-                } else {
-                    input.value += value;
-                }
-            } else if (value === '.') {
-                 const lastChar = currentValue.slice(-1);
-                 if (lastChar !== '.') {
-                     input.value += value;
-                 }
-            } else {
-                input.value += value;
-            }
-            calculateResult(false);
-        }
-
-        function calculateResult(showToast = true) {
-            const input = document.getElementById('calc-input').value.replace(/×/g, '*').replace(/÷/g, '/');
-            let resultRMB = 0;
-            
-            if (input.trim() === '') {
-                 document.getElementById('calc-result').textContent = '總額 (RMB): 0.00';
-                 document.getElementById('twd-result').textContent = '換算 (TWD): 0.00';
-                 return;
-            }
-
-            try {
-                if (!/^[0-9\.\+\-\*\/\(\)\s]+$/.test(input)) {
-                     throw new Error('不支援的算式格式');
-                }
-                
-                resultRMB = eval(input);
-                if (isNaN(resultRMB) || !isFinite(resultRMB)) {
-                    throw new Error('無效的計算結果');
-                }
-                
-                const resultTWD = resultRMB * exchangeRate;
-
-                document.getElementById('calc-result').textContent = `總額 (RMB): ${resultRMB.toFixed(2)}`;
-                document.getElementById('twd-result').textContent = `換算 (TWD): ${resultTWD.toFixed(2)}`;
-
-                if (showToast) alertModal(`計算完成: ${resultRMB.toFixed(2)} RMB`, 'success');
-
-            } catch (e) {
-                document.getElementById('calc-result').textContent = '算式錯誤 (RMB): Error';
-                document.getElementById('twd-result').textContent = '換算 (TWD): 0.00';
-                if (showToast) alertModal('算式錯誤，請檢查輸入！', 'error');
-            }
         }
 
         let currentPhotoBase64 = null;
