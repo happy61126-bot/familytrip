@@ -1070,37 +1070,30 @@
                         return e;
                     });
 
-                    // 強制更新機制：如果本地資料數量少於 7 筆（表示沒有載入新的初始資料），則重新初始化
-                    if (expenses.length < 7) {
-                        const initialExpenses = [
-                            { id: Date.now() + 7, item: 'DAY1-4漢庭酒店', amount: 4410.48, currency: 'RMB', payer: '毓芸', timestamp: new Date().toLocaleString('zh-TW'), photoBase64: null },
-                            { id: Date.now() + 6, item: 'DAY4-6益海府邸民宿', amount: 1920, currency: 'RMB', payer: '毓芸', timestamp: new Date().toLocaleString('zh-TW'), photoBase64: null },
-                            { id: Date.now() + 5, item: 'DAY8-9香柏藝術酒店', amount: 2424, currency: 'RMB', payer: '毓芸', timestamp: new Date().toLocaleString('zh-TW'), photoBase64: null },
-                            { id: Date.now() + 4, item: '天壇講解', amount: 1010, currency: 'RMB', payer: '毓芸', timestamp: new Date().toLocaleString('zh-TW'), photoBase64: null },
-                            { id: Date.now() + 3, item: '山西包車3天', amount: 3900, currency: 'RMB', payer: '毓芸', timestamp: new Date().toLocaleString('zh-TW'), photoBase64: null },
-                            { id: Date.now() + 2, item: '山西高鐵接送(3台5人座)', amount: 125, currency: 'RMB', payer: '毓芸', timestamp: new Date().toLocaleString('zh-TW'), photoBase64: null },
-                            { id: Date.now() + 1, item: '來回機票', amount: 79819, currency: 'TWD', payer: '毓芸', timestamp: new Date().toLocaleString('zh-TW'), photoBase64: null }
-                        ];
-                        
-                        // 合併邏輯：保留本地已存在且非預設項目，更新預設項目
-                        const updatedExpenses = [...initialExpenses];
-                        
-                        expenses.forEach(localExp => {
-                             // 檢查這個本地紀錄是不是預設項目之一 (用名稱比對)
-                             const isDefaultItem = initialExpenses.some(defaultExp => defaultExp.item === localExp.item);
-                             
-                             // 如果不是預設項目，表示是使用者自己新增的，我們把它保留下來加到最新列表中
-                             if (!isDefaultItem) {
-                                 updatedExpenses.push(localExp);
-                             }
-                        });
+                    // 強制更新機制：精準備對缺少哪些預設資料並補齊，不受資料總筆數限制
+                    const initialExpenses = [
+                        { id: Date.now() + 7, item: 'DAY1-4漢庭酒店', amount: 4410.48, currency: 'RMB', payer: '毓芸', timestamp: new Date().toLocaleString('zh-TW'), photoBase64: null },
+                        { id: Date.now() + 6, item: 'DAY4-6益海府邸民宿', amount: 1920, currency: 'RMB', payer: '毓芸', timestamp: new Date().toLocaleString('zh-TW'), photoBase64: null },
+                        { id: Date.now() + 5, item: 'DAY8-9香柏藝術酒店', amount: 2424, currency: 'RMB', payer: '毓芸', timestamp: new Date().toLocaleString('zh-TW'), photoBase64: null },
+                        { id: Date.now() + 4, item: '天壇講解', amount: 1010, currency: 'RMB', payer: '毓芸', timestamp: new Date().toLocaleString('zh-TW'), photoBase64: null },
+                        { id: Date.now() + 3, item: '山西包車3天', amount: 3900, currency: 'RMB', payer: '毓芸', timestamp: new Date().toLocaleString('zh-TW'), photoBase64: null },
+                        { id: Date.now() + 2, item: '山西高鐵接送(3台5人座)', amount: 125, currency: 'RMB', payer: '毓芸', timestamp: new Date().toLocaleString('zh-TW'), photoBase64: null },
+                        { id: Date.now() + 1, item: '來回機票', amount: 79819, currency: 'TWD', payer: '毓芸', timestamp: new Date().toLocaleString('zh-TW'), photoBase64: null }
+                    ];
+                    
+                    let needsUpdate = false;
+                    initialExpenses.forEach(defaultExp => {
+                        const exists = expenses.some(localExp => localExp.item === defaultExp.item);
+                        if (!exists) {
+                            expenses.push(defaultExp);
+                            needsUpdate = true;
+                        }
+                    });
 
-                        // 根據時間戳排序，新的在上面 (這裡簡單用 id 排序，因為 id 是用 Date.now() 產生的)
-                        updatedExpenses.sort((a, b) => b.id - a.id);
-                        
-                        expenses = updatedExpenses;
+                    if (needsUpdate) {
+                        // 重新排序，讓新的資料排在上面
+                        expenses.sort((a, b) => b.id - a.id);
                         saveExpenses();
-                        console.log("已強制更新初始記帳資料並保留使用者新增項目。");
                     }
 
                 } else {
